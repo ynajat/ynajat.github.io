@@ -1,6 +1,7 @@
 ---
 title: "Yousif Najat"
 image: IMG_0455.jpg
+toc: false
 about: 
   template: trestles
   image-width: 15em
@@ -19,8 +20,21 @@ about:
       icon: envelope-fill
 ---
 
-This is a Quarto website.
+## Hello!
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Finley Malloc is the Chief Data Scientist at Wengo Analytics. When not innovating on data platforms, Finley enjoys spending time unicycling and playing with her pet iguana.
 
-change
+## Education
+
+Pomona College | Claremont, CA
+BA in Mathematics (Statistics track) with a minor in Data Science | August 2025 - May 2029
+
+Macalester College | St. Paul, MN
+B.A in Economics | Sept 2007 - June 2011
+
+## Experience
+
+Wengo Analytics | Head Data Scientist | April 2018 - present
+
+GeoScynce | Chief Analyst | Sept 2012 - April 2018
+
