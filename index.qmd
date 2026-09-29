@@ -1,7 +1,26 @@
 ---
 title: "Yousif Najat"
+image: IMG_0455.jpg
+about: 
+  template: trestles
+  image-width: 15em
+  image-shape: round
+  links: 
+    - text: LinkedIn
+      href: https://www.linkedin.com/in/yousif-najat-b1305237a/
+      target: _blank
+      icon: linkedin
+    - text: GitHub
+      href: https://github.com/ynajat
+      target: _blank
+      icon: github
+    - text: Email
+      href: mailto:ylnk2025@mymail.pomona.edu
+      icon: envelope-fill
 ---
 
 This is a Quarto website.
-hi
+
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+change
