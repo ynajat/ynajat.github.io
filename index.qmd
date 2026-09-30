@@ -1,11 +1,11 @@
 ---
-title: "Connect with Me:"
+title: "Hello, I'm Yousif Najat!"
 image: IMG_0455.jpg
 toc: false
 about: 
-  template: trestles
+  template: solana
   image-width: 18em
-  image-shape: round
+  image-shape: rounded
   links: 
     - text: LinkedIn
       href: https://www.linkedin.com/in/yousif-najat-b1305237a/
@@ -19,8 +19,6 @@ about:
       href: mailto:ylnk2025@mymail.pomona.edu
       icon: envelope-fill
 ---
-
-## Hello, I'm Yousif Najat!
 
 I'm a sophomore at Pomona College studying Mathematics on the Statistics track, with a minor in Data Science. Through my coursework, I've become fascinated by how statistics and data science can be used to uncover patterns, make predictions, and understand risk. This interest has drawn me towards a career as an actuary, where I hope to bring together my interests in statistics, data science, and risk analysis.
 
