@@ -74,7 +74,7 @@
     "href": "pellgrant.html",
     "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
     "section": "",
-    "text": "Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017."
+    "text": "Pell grants, provided by the U.S. federal government to undergraduate students, are a form of need-based financial aid that does not need to be repaid by recipients. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total pell grant aid awarded at U.S. colleges/universities from 1990 to 2017."
   },
   {
     "objectID": "pellgrant.html#data-sources",
@@ -116,7 +116,7 @@
     "href": "pellgrant.html#background-data",
     "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
     "section": "",
-    "text": "Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017."
+    "text": "Pell grants, provided by the U.S. federal government to undergraduate students, are a form of need-based financial aid that does not need to be repaid by recipients. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total pell grant aid awarded at U.S. colleges/universities from 1990 to 2017."
   },
   {
     "objectID": "pellgrant.html#acknowledgement",
@@ -138,5 +138,12 @@
     "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
     "section": "Data Source",
     "text": "Data Source\nThe Astronuat dataset was provided by TidyTuesday as part of the July 14, 2020 TidyTuesday dataset, and can be accessed here. According to TidyTuesday, the dataset was originally obtained from Mariya Stavnichuk and Tatsuya Corlett, who combined primary data sources—such as data from official state agencies—with secondary data sources, such as third-party websites, to construct the dataset. Accessing Stavnichuk’s and Corlett’s dataset can be done here."
+  },
+  {
+    "objectID": "astronauts.html#background-data",
+    "href": "astronauts.html#background-data",
+    "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
+    "section": "",
+    "text": "The Astronaut dataset contains publicly available information about astronauts who participated in space missions prior to January 15, 2020. The dataset provides information about each astronaut, including their name, sex, nationality, year of selection, date of birth, and more. It also includes information about each mission completed by each astronaut, such as the year of the mission, extravehicular activity (EVA) duration, mission duration, and more."
   }
 ]

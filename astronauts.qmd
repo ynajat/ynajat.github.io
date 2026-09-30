@@ -12,7 +12,7 @@ execute:
   message: false
 ---
 
-## Data & Sources
+## Background & Data
 
 The Astronaut dataset contains publicly available information about astronauts who participated in space missions prior to January 15, 2020. The dataset provides information about each astronaut, including their name, sex, nationality, year of selection, date of birth, and more. It also includes information about each mission completed by each astronaut, such as the year of the mission, extravehicular activity (EVA) duration, mission duration, and more.
 

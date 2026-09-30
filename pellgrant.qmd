@@ -14,7 +14,7 @@ execute:
 
 ## Background & Data
 
-Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset--compiled by the U.S. Department of Education--provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017.
+Pell grants, provided by the U.S. federal government to undergraduate students, are a form of need-based financial aid that does not need to be repaid by recipients. The Pell Grant dataset--compiled by the U.S. Department of Education--provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total pell grant aid awarded at U.S. colleges/universities from 1990 to 2017.
 
 ## Data Visualization
 
