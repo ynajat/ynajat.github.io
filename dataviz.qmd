@@ -1,3 +1,4 @@
 ---
 title: "My Data Visualizations"
+pagetitle: "Data Viz"
 ---
