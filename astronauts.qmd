@@ -19,7 +19,6 @@ The Astronaut dataset contains publicly available information about astronauts w
 
 ## Data Visualization
 
-
 ```{r}
 #| fig-width: 11
 #| fig-height: 8
@@ -39,7 +38,8 @@ dec_boxplots <- astronaut_tidy |>
     labs(
         x = "Decade of Mission",
         y = "Duration of Mission in Hours",
-        title = "Duration of Space Missions over Decades"
+        title = "Duration of Space Missions over Decades",
+        subtitle = "Each observation represents an astronaut."
     ) +
     theme_minimal() +
     theme(
@@ -51,9 +51,6 @@ dec_boxplots <- astronaut_tidy |>
 
 dec_boxplots
 
-
-
-
 country_boxplots <- astronaut_tidy |> 
     filter(nationality %in% c("U.S.", "U.S.S.R/Russia")) |> 
     ggplot(aes(x = year_of_mission, y = hours_mission, color = nationality, fill = nationality)) +
@@ -63,6 +60,7 @@ country_boxplots <- astronaut_tidy |>
         x = "Decade of Mission",
         y = "Duration of Mission in Hours",
         title = "U.S. vs. U.S.S.R./Russia: Space Mission Duration Over Time",
+        subtitle = "Each observation represents an astronaut.",
         color = "Country",
         fill = "Country"
     ) +
@@ -77,6 +75,9 @@ country_boxplots <- astronaut_tidy |>
 country_boxplots
 
 ```
+
+From the visuals above, we observe that the median amount of time spent in space by astronauts during a mission increased overall from the 1960s to the 2010s, with the longest mission being completed in the 1990s by a Russian astronaut. Moreover, based on the boxplots comparing U.S. and U.S.S.R./Russia mission durations, we observe that from the 1980s to the 2000s, U.S.S.R./Russian astronauts had a higher median mission duration than U.S. astronauts.
+
 
 ## Data Source 
 

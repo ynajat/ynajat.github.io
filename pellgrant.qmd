@@ -71,6 +71,8 @@ pellgrant_viz
 
 ```
 
+From the visualization above, we observe that Claremont McKenna College, Scripps College, and Harvey Mudd College maintained a low and relatively constant number of Pell Grant recipients. In contrast, the number of Pell Grant recipients at Amherst College, Middlebury College, Pomona College, and Williams College increased gradually over time. Additionally, while the other selected liberal arts colleges had either relatively constant or increasing numbers of Pell Grant recipients from 1990 to 2017, Pitzer College experienced a decrease in the number of Pell Grant recipients from 1990 to 2017.
+
 ## Data Source
 
 The Pell Grant data used in this vizualization was provided by TidyTuesday as part of the **August 30, 2022 TidyTuesday dataset**, and can be accessed [here](https://github.com/rfordatascience/tidytuesday/tree/main/data/2022/2022-08-30). According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education.
