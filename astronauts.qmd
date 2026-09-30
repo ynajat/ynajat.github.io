@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia"
+title: "Analysis of Astronaut Mission Duration per Decade and for U.S. vs. U.S.S.R./Russia"
 author: Yousif Najat
 date: September 29, 2026
 format: 
@@ -38,7 +38,7 @@ dec_boxplots <- astronaut_tidy |>
     labs(
         x = "Decade of Mission",
         y = "Duration of Mission in Hours",
-        title = "Duration of Space Missions over Decades",
+        title = "Duration of Astronaut Missions over Decades",
         subtitle = "Each observation represents an astronaut."
     ) +
     theme_minimal() +
@@ -59,7 +59,7 @@ country_boxplots <- astronaut_tidy |>
     labs(
         x = "Decade of Mission",
         y = "Duration of Mission in Hours",
-        title = "U.S. vs. U.S.S.R./Russia: Space Mission Duration Over Time",
+        title = "U.S. vs. U.S.S.R./Russia: Astronaut Mission Duration Over Time",
         subtitle = "Each observation represents an astronaut.",
         color = "Country",
         fill = "Country"
