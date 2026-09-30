@@ -12,6 +12,8 @@ website:
         menu:
           - text: "Pell Grant"
             href: pellgrant.html
+          - text: "Space Mission Time"
+            href: astronauts.html
 
 format:
   html:

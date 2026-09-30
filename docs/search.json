@@ -74,7 +74,7 @@
     "href": "pellgrant.html",
     "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
     "section": "",
-    "text": "Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017.\nThe Pell Grant data used in this vizualization was provided by TidyTuesday as part of the August 30, 2022 TidyTuesday dataset, and can be accessed here. According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education."
+    "text": "Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017."
   },
   {
     "objectID": "pellgrant.html#data-sources",
@@ -88,6 +88,55 @@
     "href": "pellgrant.html#data-visualization",
     "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
     "section": "Data Visualization",
-    "text": "Data Visualization\n\n\nCode\nlibrary(tidyverse)\n\npell &lt;- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2022/2022-08-30/pell.csv')\n\nliberal_arts_pell &lt;- pell |&gt; \n    filter(NAME %in% c(\"Pomona College\", \"Williams College\", \"Amherst College\", \"Bowdoin College\", \"Claremont Mckenna College\", \"Swarthmore College\", \"Harvey Mudd College\", \"Wellesley College\", \"Scripps College\", \"Pitzer College\", \"Haverford College\", \"Middlebury College\"))\n\n\npellgrant_viz &lt;- liberal_arts_pell |&gt; \n    ggplot(aes(x = YEAR, y = RECIPIENT)) +\n    geom_point() +\n    geom_line() +\n    facet_wrap(~NAME) +\n    theme_light() +\n    labs(\n        title = \"Number of Pell Grant Recipients Over Time\", \n        subtitle = \"For Selected Top Liberal Arts Colleges.\", \n        x = \"Year\",\n        y = \"Pell Grant Recipients\") +\n    theme(\n        plot.title = element_text(face = \"bold\", size = 16), \n        plot.subtitle = element_text(size = 11), \n        axis.title = element_text(face = \"bold\"),\n        strip.background = element_rect(fill = \"white\", color = \"black\", linewidth = 1),\n        strip.text = element_text(face = \"bold\", color = \"black\"), \n        axis.text.x = element_text(face = \"bold\", angle = 45, hjust = 1),\n        axis.text.y = element_text(face = \"bold\"),\n        panel.border = element_rect(color = \"black\", fill = \"\", linewidth = 1)\n        )\n\npellgrant_viz"
+    "text": "Data Visualization\n\n\nCode\nlibrary(tidyverse)\n\npell &lt;- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2022/2022-08-30/pell.csv')\n\nliberal_arts_pell &lt;- pell |&gt; \n    filter(NAME %in% c(\n    \"Pomona College\", \n    \"Williams College\", \n    \"Amherst College\", \n    \"Bowdoin College\", \n    \"Claremont Mckenna College\", \n    \"Swarthmore College\", \n    \"Harvey Mudd College\", \n    \"Wellesley College\", \n    \"Scripps College\", \n    \"Pitzer College\", \n    \"Haverford College\", \n    \"Middlebury College\")\n    )\n\n\npellgrant_viz &lt;- liberal_arts_pell |&gt; \n    ggplot(aes(x = YEAR, y = RECIPIENT)) +\n    geom_point() +\n    geom_line() +\n    facet_wrap(~NAME) +\n    theme_light() +\n    labs(\n        title = \"Number of Pell Grant Recipients Over Time\", \n        subtitle = \"For Selected Top Liberal Arts Colleges.\", \n        x = \"Year\",\n        y = \"Pell Grant Recipients\"\n        ) +\n    theme(\n        plot.title = element_text(face = \"bold\", size = 16), \n        plot.subtitle = element_text(size = 11), \n        axis.title = element_text(face = \"bold\"),\n        strip.background = element_rect(fill = \"white\", color = \"black\", linewidth = 1),\n        strip.text = element_text(face = \"bold\", color = \"black\"), \n        axis.text.x = element_text(face = \"bold\", angle = 45, hjust = 1),\n        axis.text.y = element_text(face = \"bold\"),\n        panel.border = element_rect(color = \"black\", fill = \"\", linewidth = 1)\n        )\n\npellgrant_viz"
+  },
+  {
+    "objectID": "astronauts.html",
+    "href": "astronauts.html",
+    "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
+    "section": "",
+    "text": "The Astronaut dataset contains publicly available information about astronauts who participated in space missions prior to January 15, 2020. The dataset provides information about each astronaut, including their name, sex, nationality, year of selection, date of birth, and more. It also includes information about each mission completed by each astronaut, such as the year of the mission, extravehicular activity (EVA) duration, mission duration, and more."
+  },
+  {
+    "objectID": "astronauts.html#data-sources",
+    "href": "astronauts.html#data-sources",
+    "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
+    "section": "",
+    "text": "The Astronaut dataset contains publicly available information about astronauts who participated in space missions prior to January 15, 2020. The dataset provides information about each astronaut, including their name, sex, nationality, year of selection, date of birth, and more. It also includes information about each mission completed by each astronaut, such as the year of the mission, extravehicular activity (EVA) duration, mission duration, and more."
+  },
+  {
+    "objectID": "astronauts.html#data-visualization",
+    "href": "astronauts.html#data-visualization",
+    "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
+    "section": "Data Visualization",
+    "text": "Data Visualization\n\n\nCode\nlibrary(tidyverse)\n\nastronauts &lt;- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-07-14/astronauts.csv')\n\nastronaut_tidy &lt;- astronauts |&gt; \n    mutate(year_of_mission = 10 * (year_of_mission %/% 10),\n    year_of_mission = factor(year_of_mission))\n\ndec_boxplots &lt;- astronaut_tidy |&gt; \n    ggplot(aes(x = year_of_mission, y = hours_mission, color = year_of_mission, fill = year_of_mission)) +\n    geom_boxplot(alpha = 0.5, size = 0.8, outlier.size = 1.1, show.legend = FALSE) +\n    scale_y_log10() +\n    labs(\n        x = \"Decade of Mission\",\n        y = \"Duration of Mission in Hours\",\n        title = \"Duration of Space Missions over Decades\"\n    ) +\n    theme_minimal() +\n    theme(\n        plot.title = element_text(face = \"bold\", size = 16), \n        axis.title = element_text(face = \"bold\", size = 13),\n        axis.text.x = element_text(face = \"bold\", size = 11.5),\n        axis.text.y = element_text(face = \"bold\", size = 11.5)\n    )\n\ndec_boxplots\n\n\n\n\n\n\n\n\n\nCode\ncountry_boxplots &lt;- astronaut_tidy |&gt; \n    filter(nationality %in% c(\"U.S.\", \"U.S.S.R/Russia\")) |&gt; \n    ggplot(aes(x = year_of_mission, y = hours_mission, color = nationality, fill = nationality)) +\n    geom_boxplot(alpha = 0.5, size = 0.75, outlier.size = 1.1) +\n    scale_y_log10() +\n    labs(\n        x = \"Decade of Mission\",\n        y = \"Duration of Mission in Hours\",\n        title = \"U.S. vs. U.S.S.R./Russia: Space Mission Duration Over Time\",\n        color = \"Country\",\n        fill = \"Country\"\n    ) +\n    theme_light() +\n    theme(\n        plot.title = element_text(face = \"bold\", size = 16), \n        axis.title = element_text(face = \"bold\", size = 13),\n        axis.text.x = element_text(face = \"bold\", size = 11.5),\n        axis.text.y = element_text(face = \"bold\", size = 11.5)\n    )\n\ncountry_boxplots"
+  },
+  {
+    "objectID": "pellgrant.html#background-data",
+    "href": "pellgrant.html#background-data",
+    "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
+    "section": "",
+    "text": "Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset–compiled by the U.S. Department of Education–provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017."
+  },
+  {
+    "objectID": "pellgrant.html#acknowledgement",
+    "href": "pellgrant.html#acknowledgement",
+    "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
+    "section": "Acknowledgement",
+    "text": "Acknowledgement\nThe Pell Grant data used in this vizualization was provided by TidyTuesday as part of the August 30, 2022 TidyTuesday dataset, and can be accessed here. According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education."
+  },
+  {
+    "objectID": "pellgrant.html#data-source",
+    "href": "pellgrant.html#data-source",
+    "title": "Analysis of Pell Grant Recipients Over Time for Selected Liberal Arts Colleges",
+    "section": "Data Source",
+    "text": "Data Source\nThe Pell Grant data used in this vizualization was provided by TidyTuesday as part of the August 30, 2022 TidyTuesday dataset, and can be accessed here. According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education."
+  },
+  {
+    "objectID": "astronauts.html#data-source",
+    "href": "astronauts.html#data-source",
+    "title": "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia",
+    "section": "Data Source",
+    "text": "Data Source\nThe Astronuat dataset was provided by TidyTuesday as part of the July 14, 2020 TidyTuesday dataset, and can be accessed here. According to TidyTuesday, the dataset was originally obtained from Mariya Stavnichuk and Tatsuya Corlett, who combined primary data sources—such as data from official state agencies—with secondary data sources, such as third-party websites, to construct the dataset. Accessing Stavnichuk’s and Corlett’s dataset can be done here."
   }
 ]

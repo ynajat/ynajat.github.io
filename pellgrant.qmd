@@ -10,15 +10,11 @@ toc: false
 execute: 
   warning: false
   message: false
-
 ---
 
-## Data & Sources
+## Background & Data
 
 Pell grants are a form of need-based financial aid provided by the U.S. federal government to undergraduate students, and do not need to be repaid by awarded undergraduates. The Pell Grant dataset--compiled by the U.S. Department of Education--provides data on the total number of Pell Grant recipients at U.S. colleges/universities and amount of total aid awarded at U.S. colleges/universities from 1990 to 2017.
-
-
-The Pell Grant data used in this vizualization was provided by TidyTuesday as part of the **August 30, 2022 TidyTuesday dataset**, and can be accessed [here](https://github.com/rfordatascience/tidytuesday/tree/main/data/2022/2022-08-30). According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education. 
 
 ## Data Visualization
 
@@ -32,7 +28,20 @@ library(tidyverse)
 pell <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2022/2022-08-30/pell.csv')
 
 liberal_arts_pell <- pell |> 
-    filter(NAME %in% c("Pomona College", "Williams College", "Amherst College", "Bowdoin College", "Claremont Mckenna College", "Swarthmore College", "Harvey Mudd College", "Wellesley College", "Scripps College", "Pitzer College", "Haverford College", "Middlebury College"))
+    filter(NAME %in% c(
+    "Pomona College", 
+    "Williams College", 
+    "Amherst College", 
+    "Bowdoin College", 
+    "Claremont Mckenna College", 
+    "Swarthmore College", 
+    "Harvey Mudd College", 
+    "Wellesley College", 
+    "Scripps College", 
+    "Pitzer College", 
+    "Haverford College", 
+    "Middlebury College")
+    )
 
 
 pellgrant_viz <- liberal_arts_pell |> 
@@ -45,7 +54,8 @@ pellgrant_viz <- liberal_arts_pell |>
         title = "Number of Pell Grant Recipients Over Time", 
         subtitle = "For Selected Top Liberal Arts Colleges.", 
         x = "Year",
-        y = "Pell Grant Recipients") +
+        y = "Pell Grant Recipients"
+        ) +
     theme(
         plot.title = element_text(face = "bold", size = 16), 
         plot.subtitle = element_text(size = 11), 
@@ -60,3 +70,7 @@ pellgrant_viz <- liberal_arts_pell |>
 pellgrant_viz
 
 ```
+
+## Data Source
+
+The Pell Grant data used in this vizualization was provided by TidyTuesday as part of the **August 30, 2022 TidyTuesday dataset**, and can be accessed [here](https://github.com/rfordatascience/tidytuesday/tree/main/data/2022/2022-08-30). According to TidyTuesday, the Pell Grant data was obtained originally from the U.S. Department of Education.

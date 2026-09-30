@@ -13,7 +13,7 @@ about:
       target: _blank
       icon: linkedin
     - text: GitHub
-      href: https://github.com/ynajat
+      href: https://github.com/ynajat/ynajat.github.io.git
       target: _blank
       icon: github
     - text: Email

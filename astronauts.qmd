@@ -1,0 +1,83 @@
+---
+title: "Analysis of Space Mission Time per Decade and for U.S. vs. U.S.S.R./Russia"
+author: Yousif Najat
+date: September 29, 2026
+format: 
+    html:
+      code-fold: true
+      code-summary: "Code"
+toc: false
+execute: 
+  warning: false
+  message: false
+---
+
+## Data & Sources
+
+The Astronaut dataset contains publicly available information about astronauts who participated in space missions prior to January 15, 2020. The dataset provides information about each astronaut, including their name, sex, nationality, year of selection, date of birth, and more. It also includes information about each mission completed by each astronaut, such as the year of the mission, extravehicular activity (EVA) duration, mission duration, and more.
+
+
+## Data Visualization
+
+
+```{r}
+#| fig-width: 11
+#| fig-height: 8
+
+library(tidyverse)
+
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-07-14/astronauts.csv')
+
+astronaut_tidy <- astronauts |> 
+    mutate(year_of_mission = 10 * (year_of_mission %/% 10),
+    year_of_mission = factor(year_of_mission))
+
+dec_boxplots <- astronaut_tidy |> 
+    ggplot(aes(x = year_of_mission, y = hours_mission, color = year_of_mission, fill = year_of_mission)) +
+    geom_boxplot(alpha = 0.5, size = 0.8, outlier.size = 1.1, show.legend = FALSE) +
+    scale_y_log10() +
+    labs(
+        x = "Decade of Mission",
+        y = "Duration of Mission in Hours",
+        title = "Duration of Space Missions over Decades"
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(face = "bold", size = 16), 
+        axis.title = element_text(face = "bold", size = 13),
+        axis.text.x = element_text(face = "bold", size = 11.5),
+        axis.text.y = element_text(face = "bold", size = 11.5)
+    )
+
+dec_boxplots
+
+
+
+
+country_boxplots <- astronaut_tidy |> 
+    filter(nationality %in% c("U.S.", "U.S.S.R/Russia")) |> 
+    ggplot(aes(x = year_of_mission, y = hours_mission, color = nationality, fill = nationality)) +
+    geom_boxplot(alpha = 0.5, size = 0.75, outlier.size = 1.1) +
+    scale_y_log10() +
+    labs(
+        x = "Decade of Mission",
+        y = "Duration of Mission in Hours",
+        title = "U.S. vs. U.S.S.R./Russia: Space Mission Duration Over Time",
+        color = "Country",
+        fill = "Country"
+    ) +
+    theme_light() +
+    theme(
+        plot.title = element_text(face = "bold", size = 16), 
+        axis.title = element_text(face = "bold", size = 13),
+        axis.text.x = element_text(face = "bold", size = 11.5),
+        axis.text.y = element_text(face = "bold", size = 11.5)
+    )
+
+country_boxplots
+
+```
+
+## Data Source 
+
+The Astronuat dataset was provided by TidyTuesday as part of the **July 14, 2020 TidyTuesday dataset**, and can be accessed [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-07-14/readme.md). According to TidyTuesday, the dataset was originally obtained from Mariya Stavnichuk and Tatsuya Corlett, who combined primary data sources—such as data from official state agencies—with secondary data sources, such as third-party websites, to construct the dataset. Accessing Stavnichuk's and Corlett's dataset can be done [here](https://data.mendeley.com/datasets/86tsnnbv2w/1).
