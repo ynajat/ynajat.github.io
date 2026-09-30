@@ -6,7 +6,7 @@ toc: false
 about: 
   template: solana
   image-width: 18em
-  image-shape: rounded
+  image-shape: round
   links: 
     - text: LinkedIn
       href: https://www.linkedin.com/in/yousif-najat-b1305237a/
