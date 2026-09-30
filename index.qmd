@@ -5,7 +5,7 @@ image: IMG_0455.jpg
 toc: false
 about: 
   template: solana
-  image-width: 18em
+  image-width: 22em
   image-shape: round
   links: 
     - text: LinkedIn
