@@ -1,9 +1,6 @@
 ---
 title: "Hello, I'm Yousif Najat!"
-navbar:
-  left:
-    - href: index.qmd
-      text: Home
+pagetitle: "Home"
 image: IMG_0455.jpg
 toc: false
 about: 
