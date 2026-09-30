@@ -1,1 +1,92 @@
 /* css styles */
+
+/* =========================
+   Yousif Najat Portfolio
+   Navy + Flatly customization
+   ========================= */
+
+:root {
+
+  --bs-primary: #004B87;
+
+  --bs-primary-rgb: 0, 75, 135;
+
+  --bs-link-color: #004B87;
+
+  --bs-link-hover-color: #003A66;
+
+  --bs-dark: #004B87;
+
+  --bs-dark-rgb: 0, 75, 135;
+
+}
+
+/* Navbar */
+
+.navbar {
+
+  background-color: #004B87 !important;
+
+}
+
+.navbar-brand,
+
+.navbar-nav .nav-link {
+
+  color: white !important;
+
+}
+
+.navbar-nav .nav-link:hover {
+
+  color: #B8D9F2 !important;
+
+}
+
+/* Links */
+
+a {
+
+  color: #004B87;
+
+}
+
+a:hover {
+
+  color: #003A66;
+
+}
+
+/* Buttons */
+
+.btn-primary {
+
+  background-color: #004B87;
+
+  border-color: #004B87;
+
+}
+
+.btn-primary:hover {
+
+  background-color: #003A66;
+
+  border-color: #003A66;
+
+}
+
+/* Headings */
+
+h1, h2, h3 {
+
+  color: #004B87;
+
+}
+
+/* Horizontal lines */
+
+hr {
+
+  border-color: #D6E5F2;
+
+}
