@@ -8,8 +8,10 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: dataviz.qmd
-        text: Data Viz
+      - text: Data Viz
+        menu:
+          - text: "Pell Grant"
+            href: pellgrant.html
 
 format:
   html:
