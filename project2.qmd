@@ -1,0 +1,14 @@
+---
+title: "Text Analysis of SMS Messaging"
+author: Yousif Najat
+date: October 9, 2026
+format: 
+    html:
+      code-fold: true
+      code-summary: "Code"
+toc: false
+execute: 
+  warning: false
+  message: false
+---
+

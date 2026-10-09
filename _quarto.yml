@@ -14,6 +14,8 @@ website:
             href: pellgrant.html
           - text: "Astronaut Mission Duration"
             href: astronauts.html
+          - text: "SMS Messages"
+            href: project2.html
 
 format:
   html:
