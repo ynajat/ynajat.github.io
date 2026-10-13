@@ -184,7 +184,7 @@ sms_moneys <- sms |>
     
 sms_money_viz <- sms_moneys |> 
     ggplot(aes(x = Number, y = Expression, color = Label)) +
-    geom_jitter(width = 0, height = 0.3, size = 2) +
+    geom_jitter(width = 0, height = 0.28, size = 2) +
     scale_x_log10(labels = label_comma()) +
     scale_y_discrete(labels = c("Money" = "$")) +
     labs(title = "Distribution of Monetary Values Used in Messages By Selected Expressions", subtitle = "Each Expression either precedes or follows each montary value.", x = "Monetary Value", color = "Message Type") +
