@@ -90,3 +90,7 @@ hr {
   border-color: #D6E5F2;
 
 }
+
+figcaption {
+  text-align: center;
+}
