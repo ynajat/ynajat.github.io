@@ -98,6 +98,12 @@ sms |>
     group_by(Label) |> 
     summarize(Median = median(str_length(Message)))
 
+sms |> 
+    filter(Label == "spam") |> 
+    mutate(Length = str_length(Message)) |> 
+    select(Length) |> 
+    summary(Length)
+
 # Median Length of Message for ham: 52 Characters
 # Median length of Message for spam: 149 Characters
 
@@ -153,6 +159,7 @@ The moasic plot above illustrates the proporation of spam and ham messages conta
 #| fig-width: 11
 #| fig-height: 8
 
+# Let's visualize repeition of specific symbols and words by message types. 
 
 sms_duplicates <- sms |> 
     mutate(Message = str_to_lower(Message)) |>
@@ -195,6 +202,9 @@ From the graph above, we start to understand the relationship between the repeti
 #| fig-width: 11
 #| fig-height: 8
 
+# Let's visualize monetary values used in messages by message type.
+
+
 sms_moneys <- sms |> 
     mutate(Message = str_to_lower(Message)) |> 
     mutate(
@@ -205,22 +215,35 @@ sms_moneys <- sms |>
     pivot_longer(Pounds:Prize, names_to = "Expression", values_to = "Number")
     
 
-sms_money_viz <- sms_money |>  
-    ggplot(aes(x = Number)) +
+sms_money_viz <- sms_moneys |>  
+    ggplot(aes(x = Number, fill = Label)) +
     geom_histogram(na.rm = TRUE) +
     scale_x_log10(labels = label_comma()) +
     facet_grid(~Label) +
-    labs(title = "Distribution of Monetary Values Used in Messages By Message Type", x = "Monetary Value", y = "Count") +
-    theme_light() +
-    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+    labs(title = "Distribution of Monetary Values Used in Messages By Message Type", subtitle = str_wrap('Any values preceding the words "pounds" and "prize" (regardless of case), as well as any values following the "$" symbol, were considered monetary values.', width = 130), x = "Monetary Value", y = "Count", fill = "Message Type") +
+    theme_bw() +
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.title = element_text(size = 13), legened.text = element_text(size = 13))
 
 
 sms_money_viz
 
 ```
 
-The plot above describes the distribution of monetary values used in messages that are 
+As seen in the histograms above, the most common monetary value used in spam messages was 1000, with most spam messages (that contain a monetary value) containing monetary values around this amount. On the other hand, the monetary values in ham messages were all less than 1000 and scattered, with no clear and common monetary value. This may be due to the smaller number of observations in ham messages that contained monetary values as compared to spam messages, which also suggests that spam messages are more likely to contain monetary values than ham messages. Lastly, it is important to note that for values preceding "pounds," the use of pounds as a unit of mass could also have been included as a monetary value, meaning that the "4" in a message stating "I want 4 pounds of apples" could have been extracted as a monetary value.
 
+# Conclusion
 
+Although several characteristics of spam messages were explored, let's now return to the questions asked earlier and summarize our findings.
 
+Based on the dataset we utilized and the analysis completed, we can generally characterize spam messages linguistically and physically as:
+
+- Having a length of ~132.5-157 characters (Q1 and Q3 of boxplot).
+
+- Containing words such as **Win**, **Urgent**, **Reply**, **Prize**, **Private**, **Free**, **Claim**, **Cash**, **Call**, and **Activate**.
+
+- Containing higher than average number of repetitions of **!**, **Call**, **Free**.
+
+- Containing monetary values of 1,000 or around 1,000.
+
+Therefore, by identifying the patterns and characteristics that distinguish spam messages from ham messages, our analysis has helped establish a clearer defintion of spam messages and a general criteria for distinguishing between the two message types.
 
