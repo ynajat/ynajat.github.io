@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Yousif Najat">
-<meta name="dcterms.date" content="2026-10-09">
+<meta name="dcterms.date" content="2026-10-14">
 
-<title>Inside the Language of SMS Spam: Understanding the Language of Spam Messaging Using Regular Expressions – Yousif Najat</title>
+<title>Inside the Language of SMS Spam: Characterizing Spam Messaging Using Regular Expression – Yousif Najat</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -172,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Inside the Language of SMS Spam: Understanding the Language of Spam Messaging Using Regular Expressions</h1>
+<h1 class="title">Inside the Language of SMS Spam: Characterizing Spam Messaging Using Regular Expression</h1>
 </div>
 
 
@@ -189,7 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 9, 2026</p>
+      <p class="date">October 14, 2026</p>
     </div>
   </div>
   
@@ -210,24 +210,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 <p>Now we’ve all been there. After all, who can say no to a <strong>FREE</strong> $1,000? Just click the link!</p>
-<p>In all reality, you probably shouldn’t click the link, as this is yet another SMS spam message. SMS (Short Message Service) spam messages are unsolicited texts–messages that recipients did not authroize to receive–that are sent in bulk to a large number of mobile phones. While often persuasive, deceptive, and sometimes indistinguishable from legitimate messages (like “Hi, I wanted to check up on you.”), SMS spam messages can be more than an annoyance; they can also pose serious digital security risks. But what exactly makes a message spam? And how can we better understand the language used in spam messages to distinguish them from legitmate texts?</p>
-<p>These are the questions this project seeks to tackle.</p>
+<p>In all reality, you probably shouldn’t click that link. This is yet another SMS spam message. SMS (Short Message Service) spam messages are unsolicited texts—messages not prompted by recipients—that are often sent in bulk to a large number of mobile phones. While often persuasive, deceptive, and sometimes indistinguishable from legitimate messages (like “Hi, I wanted to check up on you”), SMS spam messages can be more than an annoyance; they can also pose serious digital security risks.</p>
+<p>Thus, it is natural to wonder: What exactly characterizes spam messages? What linguistic patterns might be more prominent in spam messages compared to legitimate ones? And how can we use this knowledge to better distinguish between spam and legitimate messages?</p>
+<p>These are some of the questions this project seeks to tackle.</p>
 </section>
 <section id="data-data-source" class="level1">
 <h1>Data &amp; Data Source</h1>
-<p>The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham–a legitmate message–or spam, to distinguish between the message types.</p>
-<p>The dataset used in this project was downloaded from <a href="https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset">Kaggle</a>; however, the original dataset was obtained from the UC Irvine Machine Learning Repository and can be found at the citation below:</p>
-<p>Almeida, Tiago and Jos Hidalgo. “SMS Spam Collection.” UCI Machine Learning Repository, 2011, https://doi.org/10.24432/C5CC84.</p>
-<div class="cell">
+<p>The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham—a legitmate message—or spam, to distinguish between the message types. Moreover, as we can observe from the bar chart below, less than 1,000 messages in the dataset are spam while all other messages are ham (legitmate messages).</p>
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import dataset</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringi)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmosaic)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringi)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmosaic)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Import dataset</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"spam.csv"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
@@ -235,42 +234,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="st">"v1"</span>, <span class="st">"v2"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">Label =</span> v1, <span class="at">Message =</span> v2)</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Original dataset includes characters that R does not recongize, so let's change all such character to '`' which has no instances in the original dataset</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Original dataset includes characters that R does not recongize, so let's change all such character to '`' which has no instances in the original dataset.</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>sms <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Message =</span> <span class="fu">iconv</span>(Message, <span class="at">from =</span> <span class="st">""</span>, <span class="at">to =</span> <span class="st">"UTF-8"</span>, <span class="at">sub =</span> <span class="st">"`"</span>), <span class="at">Label =</span> <span class="fu">factor</span>(Label, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"spam"</span>, <span class="st">"ham"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Message =</span> <span class="fu">iconv</span>(Message, <span class="at">from =</span> <span class="st">""</span>, <span class="at">to =</span> <span class="st">"UTF-8"</span>, <span class="at">sub =</span> <span class="st">"`"</span>), <span class="at">Label =</span> <span class="fu">factor</span>(Label, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"spam"</span>, <span class="st">"ham"</span>)))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># From dataset, how many messages are ham vs spam?</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>sms_bar <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Label)) <span class="sc">+</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Label)) <span class="sc">+</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Number of Observations By Message Type"</span>, <span class="at">x =</span> <span class="st">"Message Type"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>sms_bar</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project2_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+</figure>
 </div>
+</div>
+</div>
+<p>The dataset used in this project was downloaded from <a href="https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset">Kaggle</a>; however, the original dataset was obtained from the UC Irvine Machine Learning Repository and can be found at the citation below:</p>
+<p>Almeida, Tiago and Jos Hidalgo. “SMS Spam Collection.” UCI Machine Learning Repository, 2011, https://doi.org/10.24432/C5CC84.</p>
+<p>The dataset is also available in the GitHub repository for this website.</p>
 </section>
-<section id="part-1-exploring-sms-spam-dataset" class="level1">
-<h1>Part 1: Exploring SMS Spam Dataset</h1>
-<div class="cell">
+<section id="analysis-characterizing-sms-spam-messages" class="level1">
+<h1>Analysis: Characterizing SMS Spam Messages</h1>
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From dataset, how many messages are ham vs spam?</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize message length (includes spaces) per message type</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sms_bar <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Label)) <span class="sc">+</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Label)) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Number of Observations Per Message Type"</span>, <span class="at">x =</span> <span class="st">"Message Type"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sms_box <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Label, <span class="at">y =</span> <span class="fu">str_length</span>(Message))) <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">color =</span> Label), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Message Length By Message Type"</span>, <span class="at">x =</span> <span class="st">"Message Type"</span>, <span class="at">y =</span> <span class="st">"Length of Message"</span>) <span class="sc">+</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize message length (includes spaces) per message type</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>sms_box <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Label, <span class="at">y =</span> <span class="fu">str_length</span>(Message))) <span class="sc">+</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">color =</span> Label), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Message Length Per Message Type"</span>, <span class="at">x =</span> <span class="st">"Message Type"</span>, <span class="at">y =</span> <span class="st">"Length of Message"</span>) <span class="sc">+</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>sms_bar <span class="sc">|</span> sms_box</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>sms_box</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1200"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1056"></p>
 </figure>
 </div>
 </div>
@@ -295,52 +306,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Median length of Message for spam: 149 Characters</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>From the bar chart on the left, we observe that in the SMS Spam dataset, there are less than 1,000 messages that are spam while all other messages are ham (legitmate messages). Now, when analzying message lengths per message type from the boxplot on the right, we observe that spam messages have a higher median (149 characters) than ham messages (52 characters). Moreover, we also observe that for spam message the distribution of message lengths is less variable and less wide than with ham messages.</p>
-</section>
-<section id="part-2-characterizing-spam-message-language" class="level1">
-<h1>Part 2: Characterizing Spam Message Language</h1>
-<div class="cell">
+<p>When analyzing the boxplots and table above, we observe that spam messages have a higher median length of 149 characters compared to ham messages, which have a median length of 52 characters. Moreover, we observe that the distribution of spam message lengths is less variable and more concentrated than that of ham messages.</p>
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sms_words <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Message =</span> <span class="fu">str_to_lower</span>(Message)) <span class="sc">|&gt;</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">Free =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bfree</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Win =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bwin</span><span class="sc">\\</span><span class="st">b | </span><span class="sc">\\</span><span class="st">bwon</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Claim =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bclaim</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">Urgent =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">burgent</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">Prize =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bprize</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">Call =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcall</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">Now =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bnow</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">Reply =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">breply</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">Congrats =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcongrats</span><span class="sc">\\</span><span class="st">b | </span><span class="sc">\\</span><span class="st">bcongratulation(s)?</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">Activate =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bactivate</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">Private =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bprivate</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">Cash =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcash</span><span class="sc">\\</span><span class="st">b"</span>),</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">XXX =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bxxx</span><span class="sc">\\</span><span class="st">b"</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    ) </span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>sms_word <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(sms_words, Free<span class="sc">:</span>XXX, <span class="at">names_to =</span> <span class="st">"Word"</span>, <span class="at">values_to =</span> <span class="st">"Contains"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize the proporation of "spam" words by message types. </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sms_words <span class="ot">&lt;-</span> sms <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Message =</span> <span class="fu">str_to_lower</span>(Message)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Free =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bfree</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">Win =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bwin</span><span class="sc">\\</span><span class="st">b | </span><span class="sc">\\</span><span class="st">bwon</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">Claim =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bclaim</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">Urgent =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">burgent</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">Prize =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bprize</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">Call =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcall</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">Now =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bnow</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">Reply =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">breply</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">Congrats =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcongrats</span><span class="sc">\\</span><span class="st">b | </span><span class="sc">\\</span><span class="st">bcongratulation(s)?</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">Activate =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bactivate</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">Private =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bprivate</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">Cash =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bcash</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">XXX =</span> <span class="fu">str_detect</span>(Message, <span class="st">"</span><span class="sc">\\</span><span class="st">bxxx</span><span class="sc">\\</span><span class="st">b"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    ) </span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>sms_word <span class="sc">|&gt;</span> </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Contains) <span class="sc">|&gt;</span> </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(Label, Word) <span class="sc">|&gt;</span> </span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_mosaic</span>(<span class="fu">aes</span>(<span class="at">x =</span> Word, <span class="at">fill =</span> Label, <span class="at">weight =</span> n)) <span class="sc">+</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.10</span>)) <span class="sc">+</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Proportion of Popular Spam Words by Message Type"</span>, <span class="at">subtitle =</span> <span class="fu">str_wrap</span>(<span class="st">"Each side column's widths on the y-axis represents the relative frequency of that word, while the colored areas show the proporation of messages containing the word per message type."</span>, <span class="at">width =</span> <span class="dv">100</span>), <span class="at">y =</span> <span class="st">"Proporation of Messages"</span>, <span class="at">fill =</span> <span class="st">"Message Type"</span>) <span class="sc">+</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>sms_word <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(sms_words, Free<span class="sc">:</span>XXX, <span class="at">names_to =</span> <span class="st">"Word"</span>, <span class="at">values_to =</span> <span class="st">"Contains"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>sms_word <span class="sc">|&gt;</span> </span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Contains) <span class="sc">|&gt;</span> </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(Label, Word) <span class="sc">|&gt;</span> </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_mosaic</span>(<span class="fu">aes</span>(<span class="at">x =</span> Word, <span class="at">fill =</span> Label, <span class="at">weight =</span> n)) <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.10</span>)) <span class="sc">+</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Proportion of Spam-Associated Words by Message Type"</span>, <span class="at">subtitle =</span> <span class="fu">str_wrap</span>(<span class="st">"Each side column's widths on the y-axis represents the relative frequency of that word in the dataset, while the colored areas show the proporation of messages containing the word per message type."</span>, <span class="at">width =</span> <span class="dv">100</span>), <span class="at">y =</span> <span class="st">"Proporation of Messages"</span>, <span class="at">fill =</span> <span class="st">"Message Type"</span>) <span class="sc">+</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>The moasic plot above illustrates the proporation of spam and ham messages containing each spam-associated word, while also providing information about the relative frequency of each word in the dataset. As can be observed from the plot, spam messages were more likely than ham messages to contain the words: <strong>Win</strong>, <strong>Urgent</strong>, <strong>Reply</strong>, <strong>Prize</strong>, <strong>Private</strong>, <strong>Free</strong>, <strong>Claim</strong>, <strong>Cash</strong>, <strong>Call</strong>, and <strong>Activate</strong>. Additionally, the words <strong>Call</strong>, <strong>Free</strong>, <strong>Win</strong>, <strong>Relpy</strong>, and <strong>Claim</strong>, appeared more frequently in spam messages, suggesting that these words are not only associated with spam messages but are also more commonly used across spam messages. Interestingly, the words <strong>Now</strong>, <strong>XXX</strong>, and <strong>Congrats/Congratulations</strong> appeared more frequently in ham messages than spam messages, suggesting that these words may not be as useful in distinguishing between spam and ham messages.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -372,18 +383,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.10</span>)) <span class="sc">+</span></span>
 <span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Exclam"</span> <span class="ot">=</span> <span class="st">"!"</span>, <span class="st">"Money"</span> <span class="ot">=</span> <span class="st">"$"</span>)) <span class="sc">+</span></span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legened.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
 <span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>sms_dup_viz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="1200"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="1056"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>From the graph above, we start to understand the relationship between the repetition of specific words/symbol and message type. More specifically, we observe that spam messages had far higher average number of repetitions of <strong>!</strong>, <strong>Call</strong>, <strong>Free</strong> than ham messages—although this was the general trend across all the selected symbols and words. This suggests that the number of repetitions of <strong>!</strong>, <strong>Call</strong>, <strong>Free</strong> may be particularly useful in determining if a message is spam or ham, as these three had the greatest differences in average repetitions between the two message types.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -398,12 +410,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>sms_money_viz <span class="ot">&lt;-</span> sms_moneys <span class="sc">|&gt;</span> </span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Number, <span class="at">y =</span> Expression, <span class="at">color =</span> Label)) <span class="sc">+</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.28</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.25</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Money"</span> <span class="ot">=</span> <span class="st">"$"</span>)) <span class="sc">+</span></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Monetary Values Used in Messages By Selected Expressions"</span>, <span class="at">subtitle =</span> <span class="st">"Each Expression either precedes or follows each montary value."</span>, <span class="at">x =</span> <span class="st">"Monetary Value"</span>, <span class="at">color =</span> <span class="st">"Message Type"</span>) <span class="sc">+</span></span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legened.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>sms_money_viz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>

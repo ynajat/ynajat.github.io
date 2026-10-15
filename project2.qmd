@@ -1,7 +1,7 @@
 ---
-title: "Inside the Language of SMS Spam: Understanding the Language of Spam Messaging Using Regular Expressions"
+title: "Inside the Language of SMS Spam: Characterizing Spam Messaging Using Regular Expression"
 author: Yousif Najat
-date: October 9, 2026
+date: October 14, 2026
 format: 
     html:
       code-fold: true
@@ -18,20 +18,21 @@ execute:
 
 Now we've all been there. After all, who can say no to a **FREE** $1,000? Just click the link! 
 
-In all reality, you probably shouldn't click the link, as this is yet another SMS spam message. SMS (Short Message Service) spam messages are unsolicited texts--messages that recipients did not authroize to receive--that are sent in bulk to a large number of mobile phones. While often persuasive, deceptive, and sometimes indistinguishable from legitimate messages (like "Hi, I wanted to check up on you."), SMS spam messages can be more than an annoyance; they can also pose serious digital security risks. But what exactly makes a message spam? And how can we better understand the language used in spam messages to distinguish them from legitmate texts? 
+In all reality, you probably shouldn't click that link. This is yet another SMS spam message. SMS (Short Message Service) spam messages are unsolicited texts---messages not prompted by recipients---that are often sent in bulk to a large number of mobile phones. While often persuasive, deceptive, and sometimes indistinguishable from legitimate messages (like "Hi, I wanted to check up on you"), SMS spam messages can be more than an annoyance; they can also pose serious digital security risks. 
 
-These are the questions this project seeks to tackle.
+Thus, it is natural to wonder: What exactly characterizes spam messages? What linguistic patterns might be more prominent in spam messages compared to legitimate ones? And how can we use this knowledge to better distinguish between spam and legitimate messages?
+
+These are some of the questions this project seeks to tackle.
 
 # Data & Data Source
 
-The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham--a legitmate message--or spam, to distinguish between the message types. 
-
-The dataset used in this project was downloaded from [Kaggle](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset); however, the original dataset was obtained from the UC Irvine Machine Learning Repository and can be found at the citation below:
-
-Almeida, Tiago and Jos Hidalgo. "SMS Spam Collection." UCI Machine Learning Repository, 2011, https://doi.org/10.24432/C5CC84.
+The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham---a legitmate message---or spam, to distinguish between the message types. Moreover, as we can observe from the bar chart below, less than 1,000 messages in the dataset are spam while all other messages are ham (legitmate messages). 
 
 ```{r}
-# Import dataset
+#| fig-width: 8
+#| fig-height: 6
+#| fig-align: center
+
 
 library(tidyverse)
 library(stringi)
@@ -39,43 +40,57 @@ library(patchwork)
 library(ggmosaic)
 library(scales)
 
+# Import dataset
+
 sms <- read_csv("spam.csv")
 
 sms <- sms |> 
     select("v1", "v2") |> 
     rename(Label = v1, Message = v2)
 
-# Original dataset includes characters that R does not recongize, so let's change all such character to '`' which has no instances in the original dataset
+# Original dataset includes characters that R does not recongize, so let's change all such character to '`' which has no instances in the original dataset.
 
 sms <- sms |> 
     mutate(Message = iconv(Message, from = "", to = "UTF-8", sub = "`"), Label = factor(Label, levels = c("spam", "ham")))
-```
-
-# Part 1: Exploring SMS Spam Dataset
-
-```{r}
-#| fig-width: 12.5
-#| fig-height: 6.25
 
 # From dataset, how many messages are ham vs spam?
 
 sms_bar <- sms |> 
     ggplot(aes(x = Label)) +
     geom_bar(aes(fill = Label)) +
-    labs(title = "Number of Observations Per Message Type", x = "Message Type", y = "Count") +
+    labs(title = "Number of Observations By Message Type", x = "Message Type", y = "Count") +
     theme_minimal() +
     theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.position = "none")
+
+sms_bar
+
+```
+
+
+The dataset used in this project was downloaded from [Kaggle](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset); however, the original dataset was obtained from the UC Irvine Machine Learning Repository and can be found at the citation below:
+
+Almeida, Tiago and Jos Hidalgo. "SMS Spam Collection." UCI Machine Learning Repository, 2011, https://doi.org/10.24432/C5CC84.
+
+The dataset is also available in the GitHub repository for this website. 
+
+# Analysis: Characterizing SMS Spam Messages
+
+```{r}
+#| fig-width: 11
+#| fig-height: 7
+#| fig-align: center
+
 
 # Let's visualize message length (includes spaces) per message type
 
 sms_box <- sms |> 
     ggplot(aes(x = Label, y = str_length(Message))) +
     geom_boxplot(aes(color = Label), alpha = 0.5) +
-    labs(title = "Distribution of Message Length Per Message Type", x = "Message Type", y = "Length of Message") +
+    labs(title = "Distribution of Message Length By Message Type", x = "Message Type", y = "Length of Message") +
     theme_minimal() +
     theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.position = "none")
 
-sms_bar | sms_box
+sms_box
 
 # Let's find the median message length for each message type
 
@@ -88,13 +103,14 @@ sms |>
 
 ```
 
-From the bar chart on the left, we observe that in the SMS Spam dataset, there are less than 1,000 messages that are spam while all other messages are ham (legitmate messages). Now, when analzying message lengths per message type from the boxplot on the right, we observe that spam messages have a higher median (149 characters) than ham messages (52 characters). Moreover, we also observe that for spam message the distribution of message lengths is less variable and less wide than with ham messages. 
-
-# Part 2: Characterizing Spam Message Language
+When analyzing the boxplots and table above, we observe that spam messages have a higher median length of 149 characters compared to ham messages, which have a median length of 52 characters. Moreover, we observe that the distribution of spam message lengths is less variable and more concentrated than that of ham messages. 
 
 ```{r}
 #| fig-width: 10
 #| fig-height: 12
+#| fig-align: center
+
+# Let's visualize the proporation of "spam" words by message types. 
 
 sms_words <- sms |> 
     mutate(Message = str_to_lower(Message)) |> 
@@ -122,16 +138,20 @@ sms_word |>
     ggplot() +
     geom_mosaic(aes(x = Word, fill = Label, weight = n)) +
     scale_y_continuous(breaks = seq(0,1, by = 0.10)) +
-    labs(title = "Proportion of Popular Spam Words by Message Type", subtitle = str_wrap("Each side column's widths on the y-axis represents the relative frequency of that word, while the colored areas show the proporation of messages containing the word per message type.", width = 100), y = "Proporation of Messages", fill = "Message Type") +
+    labs(title = "Proportion of Spam-Associated Words by Message Type", subtitle = str_wrap("Each side column's widths on the y-axis represents the relative frequency of that word in the dataset, while the colored areas show the proporation of messages containing the word per message type.", width = 100), y = "Proporation of Messages", fill = "Message Type") +
     coord_flip() +
     theme_minimal() +
     theme(plot.title = element_text(face = "bold", size = 16), plot.subtitle = element_text(size = 14), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
 
+
 ```
 
+The moasic plot above illustrates the proporation of spam and ham messages containing each spam-associated word, while also providing information about the relative frequency of each word in the dataset. As can be observed from the plot, spam messages were more likely than ham messages to contain the words: **Win**, **Urgent**, **Reply**, **Prize**, **Private**, **Free**, **Claim**, **Cash**, **Call**, and **Activate**. Additionally, the words **Call**, **Free**, **Win**, **Relpy**, and **Claim**, appeared more frequently in spam messages, suggesting that these words are not only associated with spam messages but are also more commonly used across spam messages. Interestingly, the words **Now**, **XXX**, and **Congrats/Congratulations** appeared more frequently in ham messages than spam messages, suggesting that these words may not be as useful in distinguishing between spam and ham messages. 
+
+
 ```{r}
-#| fig-width: 12.5
-#| fig-height: 6.25
+#| fig-width: 11
+#| fig-height: 8
 
 
 sms_duplicates <- sms |> 
@@ -162,12 +182,14 @@ sms_dup_viz <- sms_dups |>
     scale_x_continuous(breaks = seq(0,1, by = 0.10)) +
     scale_y_discrete(labels = c("Exclam" = "!", "Money" = "$")) +
     theme_minimal() +
-    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.title = element_text(size = 13), legened.text = element_text(size = 13))
 
 sms_dup_viz
 
 ```
 
+From the graph above, we start to understand the relationship between the repetition of specific words/symbol and message type. More specifically, we observe that spam messages had far higher average number of repetitions of **!**, **Call**, **Free** than ham messages---although this was the general trend across all the selected symbols and words. This suggests that the number of repetitions of **!**, **Call**, **Free** may be particularly useful in determining if a message is spam or ham, as these three had the greatest differences in average repetitions between the two message types. 
+ 
 
 ```{r}
 #| fig-width: 11
@@ -182,20 +204,22 @@ sms_moneys <- sms |>
     ) |> 
     pivot_longer(Pounds:Prize, names_to = "Expression", values_to = "Number")
     
-sms_money_viz <- sms_moneys |> 
-    ggplot(aes(x = Number, y = Expression, color = Label)) +
-    geom_jitter(width = 0, height = 0.28, size = 2) +
+
+sms_money_viz <- sms_money |>  
+    ggplot(aes(x = Number)) +
+    geom_histogram(na.rm = TRUE) +
     scale_x_log10(labels = label_comma()) +
-    scale_y_discrete(labels = c("Money" = "$")) +
-    labs(title = "Distribution of Monetary Values Used in Messages By Selected Expressions", subtitle = "Each Expression either precedes or follows each montary value.", x = "Monetary Value", color = "Message Type") +
-    theme_minimal() +
-    theme(plot.title = element_text(face = "bold", size = 16), plot.subtitle = element_text(size = 14), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+    facet_grid(~Label) +
+    labs(title = "Distribution of Monetary Values Used in Messages By Message Type", x = "Monetary Value", y = "Count") +
+    theme_light() +
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+
 
 sms_money_viz
 
 ```
 
-
+The plot above describes the distribution of monetary values used in messages that are 
 
 
 
