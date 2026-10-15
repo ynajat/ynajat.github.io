@@ -26,7 +26,7 @@ These are some of the questions this project seeks to tackle.
 
 # Data & Data Source
 
-The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham---a legitmate message---or spam, to distinguish between the message types. Moreover, as we can observe from the bar chart below, less than 1,000 messages in the dataset are spam while all other messages are ham (legitmate messages). 
+The SMS Spam Collection dataset contains 5,572 tagged SMS messages that have been collected for the purpose of SMS Spam research. Each message in the dataset is tagged as either ham---a legitimate message---or spam, to distinguish between the message types. Moreover, as we can observe from the bar chart below, less than 1,000 messages in the dataset are spam while all other messages are ham (legitimate messages). 
 
 ```{r}
 #| fig-width: 8
@@ -98,18 +98,12 @@ sms |>
     group_by(Label) |> 
     summarize(Median = median(str_length(Message)))
 
-sms |> 
-    filter(Label == "spam") |> 
-    mutate(Length = str_length(Message)) |> 
-    select(Length) |> 
-    summary(Length)
-
 # Median Length of Message for ham: 52 Characters
 # Median length of Message for spam: 149 Characters
 
 ```
 
-When analyzing the boxplots and table above, we observe that spam messages have a higher median length of 149 characters compared to ham messages, which have a median length of 52 characters. Moreover, we observe that the distribution of spam message lengths is less variable and more concentrated than that of ham messages. 
+When analyzing the boxplots and table above, we observe that spam messages have a higher median length of 149 characters compared to ham messages, which have a median length of 52 characters. Additionally, we also observe that the distribution of spam message lengths is less variable and more concentrated than that of ham messages. 
 
 ```{r}
 #| fig-width: 10
@@ -152,14 +146,14 @@ sms_word |>
 
 ```
 
-The moasic plot above illustrates the proporation of spam and ham messages containing each spam-associated word, while also providing information about the relative frequency of each word in the dataset. As can be observed from the plot, spam messages were more likely than ham messages to contain the words: **Win**, **Urgent**, **Reply**, **Prize**, **Private**, **Free**, **Claim**, **Cash**, **Call**, and **Activate**. Additionally, the words **Call**, **Free**, **Win**, **Relpy**, and **Claim**, appeared more frequently in spam messages, suggesting that these words are not only associated with spam messages but are also more commonly used across spam messages. Interestingly, the words **Now**, **XXX**, and **Congrats/Congratulations** appeared more frequently in ham messages than spam messages, suggesting that these words may not be as useful in distinguishing between spam and ham messages. 
+The mosaic plot above illustrates the proportion of spam and ham messages containing each spam-associated word, while also providing information about the relative frequency of each word in the dataset. As can be observed from the plot, more spam messages than ham messages contain the words: **Win**, **Urgent**, **Reply**, **Prize**, **Private**, **Free**, **Claim**, **Cash**, **Call**, and **Activate**. Additionally, the words **Call**, **Free**, **Win**, **Relpy**, and **Claim**, have higher relative frequencies than other the words, suggesting that these words are not only associated with spam messages but are also more commonly used across spam messages. Interestingly, the words **Now**, **XXX**, and **Congrats/Congratulations** appear more frequently in ham messages than spam messages, suggesting that these words may not be as useful in distinguishing between spam and ham messages. 
 
 
 ```{r}
 #| fig-width: 11
 #| fig-height: 8
 
-# Let's visualize repeition of specific symbols and words by message types. 
+# Let's visualize repetition of specific symbols and words by message types. 
 
 sms_duplicates <- sms |> 
     mutate(Message = str_to_lower(Message)) |>
@@ -195,7 +189,7 @@ sms_dup_viz
 
 ```
 
-From the graph above, we start to understand the relationship between the repetition of specific words/symbol and message type. More specifically, we observe that spam messages had far higher average number of repetitions of **!**, **Call**, **Free** than ham messages---although this was the general trend across all the selected symbols and words. This suggests that the number of repetitions of **!**, **Call**, **Free** may be particularly useful in determining if a message is spam or ham, as these three had the greatest differences in average repetitions between the two message types. 
+From the graph above, we can start to understand the relationship between the repetition of specific words/symbol and message type. More specifically, we observe that spam messages have a far higher average number of repetitions for **!**, **Call**, **Free** than ham messages---although this was the general trend across all the selected symbols and words. This suggests that the number of repetitions of **!**, **Call**, **Free** may be particularly useful in determining if a message is spam or ham, as **!**, **Call**, **Free** have the greatest differences in average repetitions between the two message types. 
  
 
 ```{r}
@@ -229,11 +223,11 @@ sms_money_viz
 
 ```
 
-As seen in the histograms above, the most common monetary value used in spam messages was 1000, with most spam messages (that contain a monetary value) containing monetary values around this amount. On the other hand, the monetary values in ham messages were all less than 1000 and scattered, with no clear and common monetary value. This may be due to the smaller number of observations in ham messages that contained monetary values as compared to spam messages, which also suggests that spam messages are more likely to contain monetary values than ham messages. Lastly, it is important to note that for values preceding "pounds," the use of pounds as a unit of mass could also have been included as a monetary value, meaning that the "4" in a message stating "I want 4 pounds of apples" could have been extracted as a monetary value.
+As seen in the histograms above, the most common monetary value used in spam messages is 1000, with most spam messages (that contain a monetary value) containing monetary values around this amount. On the other hand, the monetary values in ham messages are all less than 1000 and scattered, with no clear and common monetary value. This may be due to the smaller number of observations of ham messages that contain monetary values as compared to spam messages, which also suggests that spam messages are more likely to contain monetary values than ham messages. Lastly, it is important to note that for values preceding "pounds," the use of pounds as a unit of mass could also have been included as a monetary value, meaning that the "4" in a message stating "I want 4 pounds of apples" could have been extracted as a monetary value.
 
 # Conclusion
 
-Although several characteristics of spam messages were explored, let's now return to the questions asked earlier and summarize our findings.
+Although several characteristics of spam messages were explored, let's now bring them all together and summarize our findings.
 
 Based on the dataset we utilized and the analysis completed, we can generally characterize spam messages linguistically and physically as:
 
@@ -245,5 +239,5 @@ Based on the dataset we utilized and the analysis completed, we can generally ch
 
 - Containing monetary values of 1,000 or around 1,000.
 
-Therefore, by identifying the patterns and characteristics that distinguish spam messages from ham messages, our analysis has helped establish a clearer defintion of spam messages and a general criteria for distinguishing between the two message types.
+Therefore, by identifying the patterns and characteristics that distinguish spam messages from ham messages, our analysis has helped establish a clearer definition of spam messages and a general criteria for distinguishing between the two message types.
 
