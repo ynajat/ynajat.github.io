@@ -16,6 +16,9 @@ website:
             href: astronauts.html
           - text: "SMS Messages"
             href: project2.html
+      - text: Car Lifetime Project
+        href: CarSurvival.html
+
 
 format:
   html:

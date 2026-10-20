@@ -152,6 +152,7 @@ The mosaic plot above illustrates the proportion of spam and ham messages contai
 ```{r}
 #| fig-width: 11
 #| fig-height: 8
+#| fig-align: center
 
 # Let's visualize repetition of specific symbols and words by message types. 
 
@@ -195,6 +196,7 @@ From the graph above, we can start to understand the relationship between the re
 ```{r}
 #| fig-width: 11
 #| fig-height: 8
+#| fig-align: center
 
 # Let's visualize monetary values used in messages by message type.
 
