@@ -1,7 +1,6 @@
 ---
 title: "**Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach to Mechanical Failure and Total-loss Accidents**"
 author: "**Yousif Najat**"
-date: October 19, 2026
 format: 
     html:
       code-fold: true
