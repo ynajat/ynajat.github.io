@@ -237,6 +237,9 @@ window.Quarto = {
   </ul></li>
   <li><a href="#analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" id="toc-analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" class="nav-link" data-scroll-target="#analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car"><span class="header-section-number">3.5</span> Analysis of Expected Remaining Mileage Based on Current Mileage of Car</a></li>
   </ul></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">4</span> Limitations</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work"><span class="header-section-number">5</span> Future Work</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">6</span> Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -276,24 +279,23 @@ window.Quarto = {
 
 <section id="project-overview" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Project Overview</h1>
-<p>Owning a car can come with a great deal of uncertainty—from the random “Check Engine” light that flashes on a ordinary Tuesday morning to the unexpected accident that takes a vehicle off the road entirely. While some cars remain reliable for hundreds of thousands of miles, others experience major failures much earlier due to mechanical deterioration or collisions. Understanding a car’s lifetime and estimating how much longer a vehicle can be used for are important considerations for manufacturers, warranty providers, insurers, and consumers.</p>
-<p>By simulating thousands of cars and their failures, this project will utilize Monte Carlo simulations and survival analysis to develop a stochastic model for estimating car lifetimes and expected remaining mileage. The model will treat car failure as the result of two competing risks:</p>
+<p>Owning a car can come with a great deal of uncertainty—from the random “Check Engine” light that flashes on an ordinary Tuesday morning to the unexpected accident that takes a vehicle off the road entirely. While some cars remain reliable for hundreds of thousands of miles, others experience major failures much earlier due to mechanical deterioration or collisions. Understanding a car’s lifetime and estimating how much longer a vehicle can be used for are important considerations for manufacturers, warranty providers, insurers, and consumers.</p>
+<p>By simulating thousands of cars and their failures, this project will utilize Monte Carlo simulations and survival analysis to develop a stochastic model for estimating car lifetimes and expected remaining mileage. The model will treat car failure as the result of two independent, competing risks:</p>
 <ol type="1">
-<li><p><strong>Mechanical retirement</strong>, where cumulative wear and deterioration eventually result in a failure that makes a car’s repair economically or practically unreasonable. That said, throughout a car’s lifetime, numerous minor mechanical issues and routine repairs may occur before retirement. Thus, instead of modeling each repair separately, this project groups these smaller repairs into the overall deterioration process and focuses on the point at which the vehicle is ultimately retired.</p></li>
+<li><p><strong>Mechanical retirement</strong>, where cumulative wear and deterioration eventually result in a failure that makes a car’s repair economically or practically unreasonable. That said, throughout a car’s lifetime, numerous minor mechanical issues and routine repairs may occur before retirement. Thus, instead of modeling each repair separately, this project groups these smaller repairs into the overall deterioration process and focuses on the point at which the vehicle is ultimately retired due to mechanical trouble.</p></li>
 <li><p><strong>Total-loss accidents</strong>, where a collision renders a car inoperable or uneconomical to repair.</p></li>
 </ol>
 </section>
 <section id="background-methodology" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Background &amp; Methodology</h1>
-<p>This section introduces the key concepts used to model car lifetimes and estimate expected remaining mileage, as well as how they will be applied in this project. These concepts include survival analysis, Weibull and exponential distributions, Monte Carlo simulations, and competing risks.</p>
+<p>This section introduces the key concepts used to model car lifetimes and estimate expected remaining mileage. These concepts include survival analysis, Weibull and exponential distributions, Monte Carlo simulations, and competing risks.</p>
 <section id="modeling-mechanical-retirement-weibull-distribution" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="modeling-mechanical-retirement-weibull-distribution"><span class="header-section-number">2.1</span> Modeling Mechanical Retirement: Weibull Distribution</h2>
 <p>Formulated by Swedish engineer and mathematician Waloddi Weibull, the Weibull distribution has become a cornerstone of reliability engineering due to its ability to represent different failure patterns depending on its parameter values. For this reason, this project will apply the Weibull distribution to model mechanical retirement mileages, which we will denote by <span class="math inline">\(T_m\)</span>. In other words, <span class="math inline">\(T_m \sim Weibull(k, \lambda)\)</span>, where <span class="math inline">\(k\)</span> is the shape parameter and <span class="math inline">\(\lambda\)</span> is the scale parameter.</p>
 <p>To better understand the Weibull distribution and how the mechanical retirement model will be constructed, it will be important for us to understand these two parameters. Therefore, the two parameters are discussed more in detail below.</p>
 <section id="shape-parameter-k" class="level3" data-number="2.1.1">
 <h3 data-number="2.1.1" class="anchored" data-anchor-id="shape-parameter-k"><span class="header-section-number">2.1.1</span> Shape Parameter (<span class="math inline">\(k\)</span>)</h3>
-<p>The shape parameter controls how failure risk changes over time in the Weibull distribution.<br>
-</p>
+<p>The shape parameter controls how failure risk changes over time in the Weibull distribution.</p>
 <p><span class="math inline">\(k &lt; 1\)</span>: Decreasing Failure Risk</p>
 <ul>
 <li>This represents situations where early failures are caused by defects, and surviving components become more reliable over time.</li>
@@ -307,7 +309,7 @@ window.Quarto = {
 <li>This represents aging and deterioration, where failure risk increases over time.</li>
 <li>There are varying levels for <span class="math inline">\(k\)</span> values over 1, each with their own meaning and use.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
 </ul>
-<p>Because cars generally become more likely to experience mechanical issues as mileage increases (since mechanical failure and mileage are not independent), this project will use a Weibull distribution with <span class="math inline">\(k &gt; 1\)</span>.</p>
+<p>Because cars generally become more likely to experience mechanical issues as mileage increases (as mechanical parts age and wear out with more use), this project will use a Weibull distribution with <span class="math inline">\(k &gt; 1\)</span>.</p>
 </section>
 <section id="scale-parameter-lambda" class="level3" data-number="2.1.2">
 <h3 data-number="2.1.2" class="anchored" data-anchor-id="scale-parameter-lambda"><span class="header-section-number">2.1.2</span> Scale Parameter (<span class="math inline">\(\lambda\)</span>)</h3>
@@ -317,14 +319,14 @@ window.Quarto = {
 <section id="modeling-total-loss-accidents-exponential-distribution" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="modeling-total-loss-accidents-exponential-distribution"><span class="header-section-number">2.2</span> Modeling Total-loss Accidents: Exponential Distribution</h2>
 <p>Mechanical deterioration is not the only reason vehicles stop operating. A car may also be destroyed through a total-loss accident, defined as an accident that results in irreparable damage or damage to the point where repair costs outweigh the car’s value.</p>
-<p>Unlike mechanical retirement, which is expected to become more likely as a car accumulates mileage, this project assumes that the risk of experiencing a total-loss accident per mile remains approximately constant. In other words, the risk of a car experiencing a total-loss accident is assumed to be approximately the same regardless of how many miles it has already accumulated. Therefore, this project treats total-loss accidents as random events whose occurrence is independent of accumulated mileage. </p>
+<p>Unlike mechanical retirement, which is expected to become more likely as a car accumulates mileage, this project assumes that the risk of experiencing a total-loss accident per mile remains approximately constant and independent of mechanical retirement. In other words, the model assumes that the rate of total-loss accidents does not change with accumulated mileage and that the occurrence of a total-loss accident is independent of the mechanical retirement process.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p>Because of these assumptions, the mileage at which total-loss accidents occur can be appropriately modeled with an exponential distribution, <span class="math inline">\(T_a \sim Exponential(\lambda)\)</span>, where <span class="math inline">\(T_a\)</span> is the variable representing the mileage at which a total-loss accident occurs and <span class="math inline">\(\lambda\)</span> is the constant rate of occurrence for total-loss accidents.</p>
 <p>In this project, <span class="math inline">\(\lambda\)</span> will also be estimated using real-world statistics.</p>
 </section>
 <section id="simulating-car-lifetimes-monte-carlo-simulations" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="simulating-car-lifetimes-monte-carlo-simulations"><span class="header-section-number">2.3</span> Simulating Car Lifetimes: Monte Carlo Simulations</h2>
 <p>Named after the famous casino town of Monte Carlo, Monte Carlo simulations have become powerful tools for estimating possible outcomes when dealing with uncertain events. By repeatedly sampling random values from probability distributions, these simulations generate a range of possible outcomes which can help us understand their likelihood.</p>
-<p>Because of this capability, this project will use Monte Carlo simulations to randomly generate mechanical retirement and total-loss accident mileages from the Weibull and exponential distributions for each simulated vehicle, rather than assigning every vehicle a random mileage for each type of risk.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> By simulating thousands of vehicles, this approach will produce a distribution of possible car lifetimes, which can then be used to estimate survival probabilities and expected remaining mileage.</p>
+<p>Because of this capability, this project will use Monte Carlo simulations to randomly generate mechanical retirement and total-loss accident mileages from the Weibull and exponential distributions for each simulated vehicle.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> By simulating thousands of vehicles, this approach will produce a distribution of possible car lifetimes, which can then be used to estimate survival probabilities and expected remaining mileage.</p>
 </section>
 <section id="building-a-model-for-car-lifetimes-competing-risks" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="building-a-model-for-car-lifetimes-competing-risks"><span class="header-section-number">2.4</span> Building a Model for Car Lifetimes: Competing Risks</h2>
@@ -334,10 +336,9 @@ window.Quarto = {
 </section>
 <section id="survival-analysis" class="level2" data-number="2.5">
 <h2 data-number="2.5" class="anchored" data-anchor-id="survival-analysis"><span class="header-section-number">2.5</span> Survival Analysis</h2>
-<p>Survival analysis provides a set of statistical methods for studying the time until an event of interest occurs. Although it is commonly used in medical research, this project applies survival analysis to car lifetimes, using total mileage as a measure of vehicle longevity. Specifically, survival analysis will help answer questions such as:</p>
+<p>Survival analysis provides a set of statistical methods for studying the time until an event of interest occurs. Although it is commonly used in medical research, this project applies survival analysis to car lifetimes, using total mileage as a measure of car lifetime. Specifically, survival analysis will help answer questions such as:</p>
 <ul>
 <li><p>What is the probability that a vehicle survives beyond 100,000 miles?</p></li>
-<li><p>What is the expected lifetime mileage of a vehicle given a specific characteristic?</p></li>
 <li><p>If a vehicle has already accumulated 80,000 miles, how many additional miles can it be expected to travel?</p></li>
 </ul>
 <p>In this context, the event of interest is the end of a vehicle’s use life, and the time variable is measured in total miles driven rather than conventional units of time.</p>
@@ -346,7 +347,7 @@ window.Quarto = {
 <h3 data-number="2.5.1" class="anchored" data-anchor-id="survival-functions-curves"><span class="header-section-number">2.5.1</span> Survival Functions &amp; Curves</h3>
 <p>The survival function describes the probability that an individual or system survives beyond a given time <span class="math inline">\(t\)</span>. Mathematically, it is defined as: <span class="math inline">\(S(t) = P(T &gt; t)\)</span> where <span class="math inline">\(T\)</span> represents the total time until the event of interest happens.</p>
 <p>In this project, the survival function represents the probability that a vehicle remains operational beyond a given mileage. For example, <span class="math inline">\(S(150,000) = 0.60\)</span>, indicates that there is a 60% probability that a car survives beyond 150,000 miles.</p>
-<p>While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Below is an example of a survival curve created using the Kaplan-Meier method:</p>
+<p>While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator, especially if censored observations are present.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Below is an example of a survival curve created using the Kaplan-Meier method:</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -373,10 +374,10 @@ window.Quarto = {
 </section>
 <section id="results" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
-<p>This section will provide and expand on the results found in this project.</p>
+<p>This section will provide and expand on the results of this project.</p>
 <section id="weibull-distribution-for-mechanical-retirement-mileage" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="weibull-distribution-for-mechanical-retirement-mileage"><span class="header-section-number">3.1</span> Weibull Distribution for Mechanical Retirement Mileage</h2>
-<p>Parameter values for the Weibull distribution were estimated using Maximum Likelihood Estimation (MLE) based on two real-world statistics: an average car has a mean lifespan of 156,470 miles<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>, and an 8.6% probability of lasting beyond 250,000 miles<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. These two statistics were used to solve for the shape and scale parameters via MLE, yielding:</p>
+<p>Parameter values for the Weibull distribution were solved numerically (Nelder-Mead) using two real-world statistics: an average car has a mean lifespan of 156,470 miles<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>, and an 8.6% probability of lasting beyond 250,000 miles<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. These two statistics were used to solve for the shape and scale parameters, yielding:</p>
 <ul>
 <li><span class="math inline">\(k\)</span> = 2.566597</li>
 <li><span class="math inline">\(\lambda\)</span> = 176,229.10</li>
@@ -433,12 +434,7 @@ window.Quarto = {
 <span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  best_scale <span class="sc">*</span> <span class="fu">gamma</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>best_shape) <span class="co"># = 156470</span></span>
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>(<span class="sc">-</span>(target_mileage_stat<span class="sc">/</span>best_scale)<span class="sc">^</span>best_shape) <span class="co"># = 0.086</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Limitation ----</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co"># A limitation that is faced here has to do with the statistics we used to optimize these values. It is very likely that these statistics also included the effect of accidents and are not simply JUST the effect of mechanical failure.</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Unfortunately, there is not much that can be done as this is simply the nature of the data; however, it is fair to assume that accidents are a relatively small share of why vehicles get retired compared to mechanical/economic wear-out.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>(<span class="sc">-</span>(target_mileage_stat<span class="sc">/</span>best_scale)<span class="sc">^</span>best_shape) <span class="co"># = 0.086</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>With these parameter estimates, we can construct the Weibull distribution used to generate simulated mechanical retirement mileages, shown below.</p>
@@ -452,7 +448,7 @@ window.Quarto = {
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grid)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Simulating Weibull Distrubtion for Mechanical Failure</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Simulating Weibull Distribution for Mechanical Failure</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">4747</span>)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  RAWmechanical_failure <span class="ot">&lt;-</span> <span class="fu">rweibull</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">shape =</span> best_shape, <span class="at">scale =</span> best_scale)</span>
@@ -467,8 +463,8 @@ window.Quarto = {
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Q.3 = 200093.6698</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maximum = 441380.7563</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(RAWmechanical_failure, <span class="at">probs =</span> <span class="fl">0.632</span>) <span class="co"># 176180.30 (good sign as this is close to the scale value we used; we expect some deivation as this is a sample)</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>(RAWmechanical_failure) <span class="co"># 156380 (close to our target mean; we expect some deivation as this is a sample)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(RAWmechanical_failure, <span class="at">probs =</span> <span class="fl">0.632</span>) <span class="co"># 176180.30 (good sign as this is close to the scale value we used; we expect some deviation as this is a sample)</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>(RAWmechanical_failure) <span class="co"># 156380 (close to our target mean; we expect some deviation as this is a sample)</span></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Visualizing the Weibull Distribution Through Simulation</span></span>
@@ -523,7 +519,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1056"></p>
-<figcaption>Figure 3: Weibull Distribution of Simulated Mechanical Retirement Mileages (<span class="math inline">\(T_m\)</span>).</figcaption>
+<figcaption>Figure 2: Weibull Distribution of Simulated Mechanical Retirement Mileages (<span class="math inline">\(T_m\)</span>).</figcaption>
 </figure>
 </div>
 </div>
@@ -533,11 +529,11 @@ window.Quarto = {
 <h2 data-number="3.2" class="anchored" data-anchor-id="exponential-distribution-for-total-loss-accident-mileage"><span class="header-section-number">3.2</span> Exponential Distribution for Total-loss Accident Mileage</h2>
 <section id="parameter-lambda" class="level3" data-number="3.2.1">
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="parameter-lambda"><span class="header-section-number">3.2.1</span> Parameter (<span class="math inline">\(\lambda\)</span>)</h3>
-<p>Like the parameter values for the Weibull distribution, the parameter value for the exponential distribution was also guided by three real-world statistics:</p>
+<p>Like the parameter values for the Weibull distribution, the parameter value for the exponential distribution was guided by three real-world statistics:</p>
 <ol type="1">
-<li>Among U.S. collision insurance claims, there is a total-loss claim frequency of 27%.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></li>
-<li>Average collision claim frequency is once every 17.9 years.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></li>
-<li>U.S. drivers drive an average of 13,476 annual miles.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</li>
+<li>Among U.S. collision insurance claims, there is a total-loss claim frequency of 27%.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></li>
+<li>Average collision claim frequency is once every 17.9 years.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
+<li>U.S. drivers drive an average of 13,476 annual miles.<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ol>
 <p>Using these three real-world statistics, the rate parameter, <span class="math inline">\(\lambda\)</span>, of the exponential distribution was estimated to be 0.000001119308.</p>
 <div class="cell">
@@ -579,7 +575,7 @@ window.Quarto = {
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Findings ----</span></span>
 <span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># It should be noted that the claims proportion for total-loss has been high the past couple of years to due increases in cost of parts and other post-COVID factors. Thus, although the rate calculated here is small, it is actually larger than in other previous years. </span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># It should be noted that the claims proportion for total-loss has been high the past couple of years due to increases in cost of parts and other post-COVID factors. Thus, although the rate calculated here is small, it is actually larger than in other previous years. </span></span>
 <span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Additionally, we must note that not all crashes/accidents are claimed by drivers, thus it is possible that this total-loss claims rate is inflated.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
@@ -662,7 +658,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="1056"></p>
-<figcaption>Figure 4: Exponential Distribution of Simulated Total-loss Accident Mileages (<span class="math inline">\(T_a\)</span>).</figcaption>
+<figcaption>Figure 3: Exponential Distribution of Simulated Total-loss Accident Mileages (<span class="math inline">\(T_a\)</span>).</figcaption>
 </figure>
 </div>
 </div>
@@ -766,12 +762,12 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="1056"></p>
-<figcaption>Figure 5: Distribution of Simulated Car Lifetime Mileages (<span class="math inline">\(T\)</span>).</figcaption>
+<figcaption>Figure 4: Distribution of Simulated Car Lifetime Mileages (<span class="math inline">\(T\)</span>).</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Figure 5 depicts the distribution of <span class="math inline">\(T\)</span>, the variable representing a car’s total lifetime mileage before failure. As a reminder, this distribution was constructed from the mechanical retirement mileage distribution and the total-loss accident mileage distribution shown in Figures 3 and 4, respectively, using the following procedure: <span class="math inline">\(T = min(T_m, T_a)\)</span>.</p>
+<p>Figure 4 depicts the distribution of <span class="math inline">\(T\)</span>, the variable representing a car’s total lifetime mileage before failure. As a reminder, this distribution was constructed from the mechanical retirement mileage distribution and the total-loss accident mileage distribution shown in Figures 2 and 3, respectively, using the following procedure: <span class="math inline">\(T = min(T_m, T_a)\)</span>.</p>
 <p>The distribution of <span class="math inline">\(T\)</span> resembles that of the Weibull distribution for mechanical retirement mileage, but is shifted further to the left. This shift is expected, as some cars that would have otherwise lasted longer mechanically are instead removed from operation earlier due to a total-loss accident, as described by the competing risks framework.</p>
 <p>This can be observed more clearly by comparing the boxplots of mechanical retirement mileages and car lifetime mileages, as shown below.</p>
 <div class="cell" data-layout-align="center">
@@ -791,7 +787,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="864"></p>
-<figcaption>Figure 6: Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom).</figcaption>
+<figcaption>Figure 5: Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom).</figcaption>
 </figure>
 </div>
 </div>
@@ -802,7 +798,7 @@ window.Quarto = {
 <h2 data-number="3.4" class="anchored" data-anchor-id="survival-analysis-1"><span class="header-section-number">3.4</span> Survival Analysis</h2>
 <section id="car-survival-curve-by-mileage" class="level3" data-number="3.4.1">
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="car-survival-curve-by-mileage"><span class="header-section-number">3.4.1</span> Car Survival Curve by Mileage</h3>
-<p>Figure 7 below illustrates the survival probabilities of cars at various mileages. The risk table at the bottom shows the number of cars still at risk of becoming unusable, denoted as “At Risk,” and the number of cars that have already become unusable, denoted as “Events,” at each major mileage. Additionally, as hypothesized in Section 2.5.1, the survival function does decrease as mileage increases.</p>
+<p>Figure 6 below illustrates the survival probabilities of cars at various mileages. The risk table at the bottom shows the number of cars still at risk of becoming unusable, denoted as “At Risk,” and the number of cars that have already become unusable, denoted as “Events,” at each major mileage. Additionally, as hypothesized in Section 2.5.1, the survival function does decrease as mileage increases.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Show R Code</summary>
@@ -818,10 +814,10 @@ window.Quarto = {
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>surv_object <span class="ot">&lt;-</span> <span class="fu">Surv</span>(vehicle_lifetime<span class="sc">$</span>RAWvehicle_lifetime, vehicle_lifetime<span class="sc">$</span>Status)</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create Survival curves using Kaplan-Meier Method</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create Survival curve</span></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_object <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> vehicle_lifetime) <span class="co"># Overall Kaplan-Meier Survival Curve</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(s1)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_object <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> vehicle_lifetime)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>survival_curve <span class="ot">&lt;-</span> <span class="fu">survfit2</span>(surv_object <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> vehicle_lifetime) <span class="sc">|&gt;</span> </span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggsurvfit</span>(<span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
@@ -839,13 +835,13 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1056"></p>
-<figcaption>Figure 7: Car Survival Curve by Mileage.</figcaption>
+<figcaption>Figure 6: Car Survival Curve by Mileage.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Figure 7 is particularly important because it will serve as the source for tabulating survival probabilities at specific mileages.</p>
-<p>To verify that the Monte Carlo simulations used to build the survival model produced appropriate results, we can compare the simulated survival model with the theoretical (mathematical) survival model. In this context, the theoretical survival model describes the theoretical probability (not probabilities based on simulation) that a car survives both mechanical retirement and total-loss accidents. Because the two risks are assumed to be independent in this project, the overall theoretical survival function is the product of the mechanical retirement and total-loss accident survival functions. Figure 8 overlays the simulated and theoretical survival curves to allow for a direct comparison.</p>
+<p>Figure 6 is particularly important because it will serve as the source for tabulating survival probabilities at specific mileages.</p>
+<p>To verify that the Monte Carlo simulations used to build the survival model produced appropriate results, we can compare the simulated survival model with the theoretical (mathematical) survival model. In this context, the theoretical survival model describes the theoretical probability (not probabilities based on simulation) that a car survives both mechanical retirement and total-loss accidents. Because the two risks are assumed to be independent in this project, the overall theoretical survival function is the product of the mechanical retirement and total-loss accident survival functions. Figure 7 overlays the simulated and theoretical survival curves to allow for a direct comparison.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Show R Code</summary>
@@ -853,21 +849,21 @@ window.Quarto = {
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We define survival as surviving both mechanical retirement and total-loss accidents. Because both events are independent, we multiply their survival functions to create an overall survival function. </span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  theortical_survival <span class="ot">&lt;-</span> <span class="cf">function</span>(t, shape, scale, rate) {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  theoretical_survival <span class="ot">&lt;-</span> <span class="cf">function</span>(t, shape, scale, rate) {</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    weibull_part <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>(t<span class="sc">/</span>scale)<span class="sc">^</span>shape)</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    exponential_part <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>rate<span class="sc">*</span>t)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    survival_prob <span class="ot">&lt;-</span> weibull_part <span class="sc">*</span> exponential_part</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(survival_prob)</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  milerange <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">2</span>, <span class="fl">441380.8</span>, <span class="at">by =</span> <span class="dv">2</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  Survtheortical_curve <span class="ot">&lt;-</span> <span class="fu">theortical_survival</span>(milerange, best_shape, best_scale, accident_rate)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  milerange <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">2</span>, <span class="fu">max</span>(RAWvehicle_lifetime), <span class="at">by =</span> <span class="dv">2</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  Survtheoretical_curve <span class="ot">&lt;-</span> <span class="fu">theoretical_survival</span>(milerange, best_shape, best_scale, accident_rate)</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Creating a dataframe of survival values and mileage</span></span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  Survtheoertical_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Mileage =</span> milerange, <span class="at">Survival =</span> Survtheortical_curve)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  Survtheoertical_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Mileage =</span> milerange, <span class="at">Survival =</span> Survtheoretical_curve)</span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Overlaying Simulated Survival Curve with the Theortical Survival Curve created above </span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Overlaying Simulated Survival Curve with the Theoretical Survival Curve created above </span></span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  survival_curve <span class="sc">+</span></span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(</span>
@@ -878,7 +874,7 @@ window.Quarto = {
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">"Probability of Car Survival by Mileage"</span>,</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="st">"Simulated (black) vs. Theoretical (yellow) Survival Curve"</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="st">"Simulated (blue) vs. Theoretical (yellow) Survival Curve"</span></span>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
@@ -886,54 +882,52 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="CarSurvival_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1056"></p>
-<figcaption>Figure 8: Theortical Survival Curve (yellow) Overlaid on Simulated Survival Curve (black) for Car Lifetime Mileage.</figcaption>
+<figcaption>Figure 7: Theoretical Survival Curve (yellow) Overlaid on Simulated Survival Curve (blue) for Car Lifetime Mileage.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>As seen above, the simulated survival curve does closely follow the theoretical survival curve, indicating that our Monte Carlo simulations produce results consistent with the mathematical model.</p>
+<p>As seen above, the simulated survival curve does closely follow the theoretical survival curve, indicating that our Monte Carlo simulations did produce results consistent with the mathematical model.</p>
 </section>
 <section id="survival-probabilities" class="level3" data-number="3.4.2">
 <h3 data-number="3.4.2" class="anchored" data-anchor-id="survival-probabilities"><span class="header-section-number">3.4.2</span> Survival Probabilities</h3>
-<p>Using Figure 7, we can now tabulate survival probabilities at specific mileages to create a survival table.</p>
+<p>Using Figure 6, we can now tabulate survival probabilities at specific mileages to create a survival table.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="TabulatedProbs.png" class="img-fluid figure-img" style="width:46.0%"></p>
-<figcaption>Figure 9: Tabulated Survival Probabilities of Various Car Lifetime Mileages.</figcaption>
+<figcaption>Figure 8: Tabulated Survival Probabilities of Various Car Lifetime Mileages.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Based on the survival table above, we can observe that the survival probability reaches approximately 50% between 125,000 and 150,000 miles. This means that a vehicle with a lifetime mileage between 125,000 and 150,000 miles has approximately a 50% probability of surviving beyond its current mileage.</p>
-<p>Additionally, note the sharp decrease in survival probability between 225,000 and 250,000 miles. This makes sense, as relatively few cars last beyond 225,000 miles, let alone 250,000 miles.</p>
-<p>Lastly, it is worth noting that our estimated survival probabilities do somewhat align with available real-world statistics. For example, our model estimates that a vehicle has a 6.46% probability of surviving beyond 250,000 miles, while real-world statistics suggest that the probability of a vehicle reaching 250,000 miles is approximately 5.4%<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>. Although these estimates differ slightly, they are still relatively close, which suggests that our model does produce reasonably realistic survival estimates.</p>
+<p>Based on the survival table above, we can observe that the survival probability reaches approximately 50% between 125,000 and 150,000 miles. This means that a vehicle with a mileage between 125,000 and 150,000 miles has approximately a 50% probability of surviving beyond its current mileage.</p>
 </section>
 </section>
 <section id="analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car"><span class="header-section-number">3.5</span> Analysis of Expected Remaining Mileage Based on Current Mileage of Car</h2>
-<p>While the survival curve in Figure 7 and survival table in Figure 8 describes the overall probability that a car survives past its current mileage, it does not necessarily answer a question that many owners have: given that my car has already reached a certain mileage, how many additional miles can it be expected to operate for?</p>
+<p>While the survival curve in Figure 6 and survival table in Figure 8 describe the overall probability that a car survives past its current mileage, it does not necessarily answer a question that many owners have: given that my car has already reached a certain mileage, how many additional miles can it be expected to operate for?</p>
 <p>This section addresses that question using the concept of mean residual life, as introduced in Section 2.6. Here, mean residual life values are referred to as Expected Remaining Miles.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="ExpectedMileage.png" class="img-fluid figure-img" style="width:105.0%"></p>
-<figcaption>Figure 10: Expected Remaining Mileage Based on Current Car Mileage.</figcaption>
+<p><img src="ExpectedMileage.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Figure 9: Expected Remaining Mileage Based on Current Car Mileage.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Figure 10 above shows the relationship between expected remaining mileage and current mileage across the full range of simulated car lifetime mileages, whose distribution is shown in Figure 5. As expected, expected remaining mileage declines as current mileage increases and appears to follow a polynomial or exponential trend. This trend is clearest between 0 and 300,000 miles; however, beyond approximately 400,000 miles, the curve becomes increasingly jagged and more difficult to interpret.</p>
-<p>This jaggedness is expected, as relatively few simulated vehicles survive to such high mileages. Recall from Figure 7 that at 400,000 miles, only 15 of the original 100,000 simulated vehicles remain. Because the calculation of mean residual life involves taking a mean, estimates based on a smaller number of observations are inherently more susceptible to random variation. Therefore, estimates of expected remaining mileage above 400,000 miles are inherently less stable than those at lower mileages, where more simulated vehicles remain. This increased variability contributes to the jaggedness observed toward the end of the curve in Figure 11. For this reasons, and because such few car survive beyond 400,000 miles, it would be appropriate to limit the model to 400,000 miles.</p>
-<p>The resulting model is shown in Figure 11.</p>
+<p>Figure 9 above shows the relationship between expected remaining mileage and current mileage across the full range of simulated car lifetime mileages, whose distribution is shown in Figure 4. As expected, expected remaining mileage declines as current mileage increases and appears to follow a polynomial or exponential trend. This trend is clearest between 0 and 300,000 miles; however, beyond approximately 400,000 miles, the curve becomes increasingly jagged and more difficult to interpret.</p>
+<p>This jaggedness is expected, as relatively few simulated vehicles survive to such high mileages. Recall from Figure 6 that at 400,000 miles, only 15 of the original 100,000 simulated vehicles remain. Because the calculation of mean residual life involves taking a mean, estimates based on a smaller number of observations are inherently more susceptible to random variation. Therefore, estimates of expected remaining mileage above 400,000 miles are inherently less stable than those at lower mileages, where more simulated vehicles remain. This increased variability contributes to the jaggedness observed toward the end of the curve in Figure 9. For these reasons, and because so few car survive beyond 400,000 miles, it would be appropriate to limit the model to 400,000 miles.</p>
+<p>The resulting model is shown in Figure 10.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="FilteredExpectedMileage.png" class="img-fluid figure-img" style="width:105.0%"></p>
-<figcaption>Figure 11: Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.</figcaption>
+<p><img src="FilteredExpectedMileage.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Figure 10: Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.</figcaption>
 </figure>
 </div>
 </div>
@@ -944,15 +938,34 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="ModelComparisons.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption>Figure 12: Identifying the Best-Fit Model for Expected Remaining Mileage Estimates</figcaption>
+<figcaption>Figure 11: Identifying the Best-Fit Model for Expected Remaining Mileage Estimates</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>As observed in Figure 12, the cubic model appears to provide the best fit to the expected remaining mileage data and curve, out of all the models shown. Therefore, expected remaining mileage could follow a cubic trend.</p>
-
-
+<p>As observed in Figure 11, the cubic model appears to provide the best fit to the expected remaining mileage data and curve, out of all the models shown.</p>
 </section>
+</section>
+<section id="limitations" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Limitations</h1>
+<ul>
+<li><p>While the results of this project provide a generalization of car lifetimes, not all cars are created equal. Some cars are more reliable than others, meaning that they operate for far more miles before reaching the end of their service life. Thus, our results may not fully generalize to cars that are considered particularly unreliable or highly reliable, as their mileage lifetimes may differ from those in our model.</p></li>
+<li><p>While this project was supplemented with real-world statistics, the model produced is still theoretical in nature. This is because the model was constructed using simulations and selected real-world statistics, not a dataset of actual car lifetimes. Therefore, caution should be taken when generalizing our results to actual car lifetime mileages.</p></li>
+<li><p>While we assumed that mechanical retirement and total-loss accidents are independent for simplicity, it could be that these two factors are dependent. For example, cars with pre-existing mechanical damage may be more likely to be declared a total loss following an accident, as the additional damage from the accident may make repairs economically impractical. Thus, assuming mechanical retirement and total-loss accidents are independent may not fully represent the actual relationship between these two risks.</p></li>
+<li><p>Some of the real-world statistics used in this project are not recent, so the model may not reflect current trends in vehicle lifetime. Additionally, the statistics used to construct the Weibull distribution for mechanical retirement may have also included the effect of accidents. Unfortunately, there is not much that can be done as this is simply the nature of the statistic. Nevertheless, it is fair to assume that accidents are a relatively small share of why vehicles get retired compared to mechanical wear-out.”</p></li>
+<li><p>The model assumes that each car is never resold and is driven by a single owner for its entire lifetime until it becomes unusable. This limits what cars we can generalize our findings to.</p></li>
+</ul>
+</section>
+<section id="future-work" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Future Work</h1>
+<p>Future work could extend this analysis to cars with different levels of reliability to account for a larger scope of vehicles. Different levels of reliability could be modeled by adjusting the Weibull parameters used for mechanical retirement mileage, while keeping the total-loss accident model unchanged across groups.</p>
+</section>
+<section id="summary" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Summary</h1>
+<p>In summary, this project developed a method for modeling car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.</p>
+<p>Although these results provide useful insights into car longevity, it is still important to recognize that the model is theoretical and relies on assumptions that may not fully reflect the real world. Nevertheless, this project provides a starting point for modeling car longevity and offers useful insights for the average consumer looking to estimate how much longer their car might last and the probability of it reaching a certain mileage.</p>
+
+
 </section>
 
 
@@ -960,14 +973,14 @@ window.Quarto = {
 
 <ol>
 <li id="fn1"><p>For more information, see here: https://support.ptc.com/help/wrr/r13.0.1.0/en/index.html#page/wrr/PractitionersGuide/UnderstandingWeibullAnalysis.html<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Monte Carlo simulations are also used here as there is not a avaiable dataset that provides exact mileages with everytime a car has experinced mechanical retirement or total-loss accidents. Rather, we only know the probability distributions that describe these risks and basic real-world statistics, which is enough to run Monte Carlo simulations.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Source: https://autorecyclingworld.com/what-is-the-lifespan-of-a-vehicle-in-the-usa/<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Source: https://fox4kc.com/automotive/the-longest-lasting-cars-trucks-and-suvs-to-reach-250000-miles-and-beyond-2/<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>Source: https://www.axios.com/2025/03/03/auto-insurance-vehicles-cars-trucks-suvs<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>Source: https://www.ppdlawoffice.com/blog/2020/09/average-number-of-car-accidents-in-a-lifetime-and-avoiding-them/<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Source: Federal Highway Administration, https://www.fhwa.dot.gov/ohim/onh00/bar8.htm<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>Source: https://www.iseecars.com/longest-lasting-cars-study<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>To further reiterate, these are <em>assumptions</em> made within this particular model and may not fully represent reality. In practice, total-loss accident risk may depend on many factors, including driving behavior, road conditions, weather, vehicle usage, geographic location, and the number of miles driven. While these factors may influence the true risk and rate of total-loss accidents, assuming a constant accident rate provides a simplified framework for understanding car lifetime mileages.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Monte Carlo simulations are also used here as there is no available dataset that provides exact mileages with every time a car has experienced mechanical retirement or total-loss accidents. Rather, we only know the probability distributions that describe these risks and basic real-world statistics, which is enough to run Monte Carlo simulations.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Source: https://autorecyclingworld.com/what-is-the-lifespan-of-a-vehicle-in-the-usa/<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Source: https://fox4kc.com/automotive/the-longest-lasting-cars-trucks-and-suvs-to-reach-250000-miles-and-beyond-2/<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Source: https://www.axios.com/2025/03/03/auto-insurance-vehicles-cars-trucks-suvs<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Source: https://www.ppdlawoffice.com/blog/2020/09/average-number-of-car-accidents-in-a-lifetime-and-avoiding-them/<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Source: Federal Highway Administration, https://www.fhwa.dot.gov/ohim/onh00/bar8.htm<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

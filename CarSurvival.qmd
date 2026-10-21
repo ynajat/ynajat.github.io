@@ -14,17 +14,17 @@ execute:
 
 # Project Overview
 
-Owning a car can come with a great deal of uncertainty—from the random "Check Engine" light that flashes on a ordinary Tuesday morning to the unexpected accident that takes a vehicle off the road entirely. While some cars remain reliable for hundreds of thousands of miles, others experience major failures much earlier due to mechanical deterioration or collisions. Understanding a car's lifetime and estimating how much longer a vehicle can be used for are important considerations for manufacturers, warranty providers, insurers, and consumers.
+Owning a car can come with a great deal of uncertainty—from the random "Check Engine" light that flashes on an ordinary Tuesday morning to the unexpected accident that takes a vehicle off the road entirely. While some cars remain reliable for hundreds of thousands of miles, others experience major failures much earlier due to mechanical deterioration or collisions. Understanding a car's lifetime and estimating how much longer a vehicle can be used for are important considerations for manufacturers, warranty providers, insurers, and consumers.
 
-By simulating thousands of cars and their failures, this project will utilize Monte Carlo simulations and survival analysis to develop a stochastic model for estimating car lifetimes and expected remaining mileage. The model will treat car failure as the result of two competing risks:
+By simulating thousands of cars and their failures, this project will utilize Monte Carlo simulations and survival analysis to develop a stochastic model for estimating car lifetimes and expected remaining mileage. The model will treat car failure as the result of two independent, competing risks:
 
-1. **Mechanical retirement**, where cumulative wear and deterioration eventually result in a failure that makes a car's repair economically or practically unreasonable. That said, throughout a car's lifetime, numerous minor mechanical issues and routine repairs may occur before retirement. Thus, instead of modeling each repair separately, this project groups these smaller repairs into the overall deterioration process and focuses on the point at which the vehicle is ultimately retired.
+1. **Mechanical retirement**, where cumulative wear and deterioration eventually result in a failure that makes a car's repair economically or practically unreasonable. That said, throughout a car's lifetime, numerous minor mechanical issues and routine repairs may occur before retirement. Thus, instead of modeling each repair separately, this project groups these smaller repairs into the overall deterioration process and focuses on the point at which the vehicle is ultimately retired due to mechanical trouble.
 
 2. **Total-loss accidents**, where a collision renders a car inoperable or uneconomical to repair.
 
 # Background & Methodology
 
-This section introduces the key concepts used to model car lifetimes and estimate expected remaining mileage, as well as how they will be applied in this project. These concepts include survival analysis, Weibull and exponential distributions, Monte Carlo simulations, and competing risks.
+This section introduces the key concepts used to model car lifetimes and estimate expected remaining mileage. These concepts include survival analysis, Weibull and exponential distributions, Monte Carlo simulations, and competing risks.
 
 ## Modeling Mechanical Retirement: Weibull Distribution
 
@@ -34,7 +34,7 @@ To better understand the Weibull distribution and how the mechanical retirement 
 
 ### Shape Parameter ($k$)
 
-The shape parameter controls how failure risk changes over time in the Weibull distribution.\
+The shape parameter controls how failure risk changes over time in the Weibull distribution.
 
 
 $k < 1$: Decreasing Failure Risk
@@ -51,7 +51,7 @@ $k > 1$: Increasing Failure Risk
 - There are varying levels for $k$ values over 1, each with their own meaning and use.^[For more information, see here: https://support.ptc.com/help/wrr/r13.0.1.0/en/index.html#page/wrr/PractitionersGuide/UnderstandingWeibullAnalysis.html]
 
 
-Because cars generally become more likely to experience mechanical issues as mileage increases (since mechanical failure and mileage are not independent), this project will use a Weibull distribution with $k > 1$.
+Because cars generally become more likely to experience mechanical issues as mileage increases (as mechanical parts age and wear out with more use), this project will use a Weibull distribution with $k > 1$.
 
 ### Scale Parameter ($\lambda$)
 
@@ -62,7 +62,7 @@ The scale parameter defines the spread of the Weibull distribution and can eithe
 
 Mechanical deterioration is not the only reason vehicles stop operating. A car may also be destroyed through a total-loss accident, defined as an accident that results in irreparable damage or damage to the point where repair costs outweigh the car's value.
 
-Unlike mechanical retirement, which is expected to become more likely as a car accumulates mileage, this project assumes that the risk of experiencing a total-loss accident per mile remains approximately constant. In other words, the risk of a car experiencing a total-loss accident is assumed to be approximately the same regardless of how many miles it has already accumulated. Therefore, this project treats total-loss accidents as random events whose occurrence is independent of accumulated mileage. \footnote{To further reiterate, these are \underline{assumptions} made within this particular model and may not fully represent reality. In practice, total-loss accident risk may depend on many factors, including driving behavior, road conditions, weather, vehicle usage, geographic location, and the number of miles driven. While these factors may influence the true risk and rate of total-loss accidents, assuming a constant accident rate provides a simplified framework for understanding car lifetime mileages.}
+Unlike mechanical retirement, which is expected to become more likely as a car accumulates mileage, this project assumes that the risk of experiencing a total-loss accident per mile remains approximately constant and independent of mechanical retirement. In other words, the model assumes that the rate of total-loss accidents does not change with accumulated mileage and that the occurrence of a total-loss accident is independent of the mechanical retirement process.^[To further reiterate, these are *assumptions* made within this particular model and may not fully represent reality. In practice, total-loss accident risk may depend on many factors, including driving behavior, road conditions, weather, vehicle usage, geographic location, and the number of miles driven. While these factors may influence the true risk and rate of total-loss accidents, assuming a constant accident rate provides a simplified framework for understanding car lifetime mileages.]
 
 Because of these assumptions, the mileage at which total-loss accidents occur can be appropriately modeled with an exponential distribution, $T_a \sim Exponential(\lambda)$, where $T_a$ is the variable representing the mileage at which a total-loss accident occurs and $\lambda$ is the constant rate of occurrence for total-loss accidents.
 
@@ -72,7 +72,7 @@ In this project, $\lambda$ will also be estimated using real-world statistics.
 
 Named after the famous casino town of Monte Carlo, Monte Carlo simulations have become powerful tools for estimating possible outcomes when dealing with uncertain events. By repeatedly sampling random values from probability distributions, these simulations generate a range of possible outcomes which can help us understand their likelihood.
 
-Because of this capability, this project will use Monte Carlo simulations to randomly generate mechanical retirement and total-loss accident mileages from the Weibull and exponential distributions for each simulated vehicle, rather than assigning every vehicle a random mileage for each type of risk.^[Monte Carlo simulations are also used here as there is not a avaiable dataset that provides exact mileages with everytime a car has experinced mechanical retirement or total-loss accidents. Rather, we only know the probability distributions that describe these risks and basic real-world statistics, which is enough to run Monte Carlo simulations.] By simulating thousands of vehicles, this approach will produce a distribution of possible car lifetimes, which can then be used to estimate survival probabilities and expected remaining mileage.
+Because of this capability, this project will use Monte Carlo simulations to randomly generate mechanical retirement and total-loss accident mileages from the Weibull and exponential distributions for each simulated vehicle.^[Monte Carlo simulations are also used here as there is no available dataset that provides exact mileages with every time a car has experienced mechanical retirement or total-loss accidents. Rather, we only know the probability distributions that describe these risks and basic real-world statistics, which is enough to run Monte Carlo simulations.] By simulating thousands of vehicles, this approach will produce a distribution of possible car lifetimes, which can then be used to estimate survival probabilities and expected remaining mileage.
 
 
 ## Building a Model for Car Lifetimes: Competing Risks
@@ -81,15 +81,13 @@ Now that random mileages for mechanical retirement and total-loss accidents have
 
 Because a car can reach the end of its life through either mechanical retirement or a total-loss accident, these risks are considered competing risks. For this reason, vehicle lifetime will be determined by whichever event occurs first, or $T = min(T_m, T_a)$.
 
-This competing-risks framework provides a more realistic representation of a vehicle's lifetime than modeling either risk alone, as it accounts for the probability of either event occurring. 
+This competing-risks framework provides a more realistic representation of a vehicle's lifetime than modeling either risk alone, as it accounts for the probability of either event occurring.
 
 ## Survival Analysis
 
-Survival analysis provides a set of statistical methods for studying the time until an event of interest occurs. Although it is commonly used in medical research, this project applies survival analysis to car lifetimes, using total mileage as a measure of vehicle longevity. Specifically, survival analysis will help answer questions such as:
+Survival analysis provides a set of statistical methods for studying the time until an event of interest occurs. Although it is commonly used in medical research, this project applies survival analysis to car lifetimes, using total mileage as a measure of car lifetime. Specifically, survival analysis will help answer questions such as:
 
 - What is the probability that a vehicle survives beyond 100,000 miles?
-
-- What is the expected lifetime mileage of a vehicle given a specific characteristic?
 
 - If a vehicle has already accumulated 80,000 miles, how many additional miles can it be expected to travel?
 
@@ -103,7 +101,7 @@ The survival function describes the probability that an individual or system sur
 
 In this project, the survival function represents the probability that a vehicle remains operational beyond a given mileage. For example, $S(150,000) = 0.60$, indicates that there is a 60% probability that a car survives beyond 150,000 miles. 
 
-While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator^[For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/]. Below is an example of a survival curve created using the Kaplan-Meier method:
+While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator, especially if censored observations are present.^[For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/] Below is an example of a survival curve created using the Kaplan-Meier method:
 
 ```{r fig1, echo=FALSE, fig.cap="Figure 1: Kaplan-Meier Curve for Lung Cancer Survival. Source: Bioconductor Survival Workshop (https://bioconnector.github.io/workshops/r-survival.html).", out.width="46%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("KMCurveLung.png")
@@ -123,11 +121,11 @@ To calculate mean residual life, this project will follow these steps:
 
 # Results
 
-This section will provide and expand on the results found in this project. 
+This section will provide and expand on the results of this project. 
 
 ## Weibull Distribution for Mechanical Retirement Mileage
 
-Parameter values for the Weibull distribution were estimated using Maximum Likelihood Estimation (MLE) based on two real-world statistics: an average car has a mean lifespan of 156,470 miles^[Source: https://autorecyclingworld.com/what-is-the-lifespan-of-a-vehicle-in-the-usa/], and an 8.6% probability of lasting beyond 250,000 miles^[Source: https://fox4kc.com/automotive/the-longest-lasting-cars-trucks-and-suvs-to-reach-250000-miles-and-beyond-2/]. These two statistics were used to solve for the shape and scale parameters via MLE, yielding:
+Parameter values for the Weibull distribution were solved numerically (Nelder-Mead) using two real-world statistics: an average car has a mean lifespan of 156,470 miles^[Source: https://autorecyclingworld.com/what-is-the-lifespan-of-a-vehicle-in-the-usa/], and an 8.6% probability of lasting beyond 250,000 miles^[Source: https://fox4kc.com/automotive/the-longest-lasting-cars-trucks-and-suvs-to-reach-250000-miles-and-beyond-2/]. These two statistics were used to solve for the shape and scale parameters, yielding:
 
 - $k$ = 2.566597
 - $\lambda$ = 176,229.10 
@@ -186,10 +184,6 @@ Parameter values for the Weibull distribution were estimated using Maximum Likel
   
   exp(-(target_mileage_stat/best_scale)^best_shape) # = 0.086
 
-# ---- Limitation ----
-
-# A limitation that is faced here has to do with the statistics we used to optimize these values. It is very likely that these statistics also included the effect of accidents and are not simply JUST the effect of mechanical failure.
-# Unfortunately, there is not much that can be done as this is simply the nature of the data; however, it is fair to assume that accidents are a relatively small share of why vehicles get retired compared to mechanical/economic wear-out.
 ```
 
 With these parameter estimates, we can construct the Weibull distribution used to generate simulated mechanical retirement mileages, shown below.
@@ -197,7 +191,7 @@ With these parameter estimates, we can construct the Weibull distribution used t
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 3: Weibull Distribution of Simulated Mechanical Retirement Mileages ($T_m$)."
+#| fig-cap: "Figure 2: Weibull Distribution of Simulated Mechanical Retirement Mileages ($T_m$)."
 #| fig-align: center
 #| results: hide
 
@@ -210,7 +204,7 @@ library(scales)
 library(grid)
 
 
-## Simulating Weibull Distrubtion for Mechanical Failure
+## Simulating Weibull Distribution for Mechanical Failure
 
   set.seed(4747)
   RAWmechanical_failure <- rweibull(n = 100000, shape = best_shape, scale = best_scale)
@@ -225,8 +219,8 @@ library(grid)
     # Q.3 = 200093.6698
     # Maximum = 441380.7563
     
-    quantile(RAWmechanical_failure, probs = 0.632) # 176180.30 (good sign as this is close to the scale value we used; we expect some deivation as this is a sample)
-    mean(RAWmechanical_failure) # 156380 (close to our target mean; we expect some deivation as this is a sample)
+    quantile(RAWmechanical_failure, probs = 0.632) # 176180.30 (good sign as this is close to the scale value we used; we expect some deviation as this is a sample)
+    mean(RAWmechanical_failure) # 156380 (close to our target mean; we expect some deviation as this is a sample)
 
   
   # Visualizing the Weibull Distribution Through Simulation
@@ -284,11 +278,11 @@ library(grid)
 
 ### Parameter ($\lambda$)
 
-Like the parameter values for the Weibull distribution, the parameter value for the exponential distribution was also guided by three real-world statistics:
+Like the parameter values for the Weibull distribution, the parameter value for the exponential distribution was guided by three real-world statistics:
 
 1. Among U.S. collision insurance claims, there is a total-loss claim frequency of 27%.^[Source: https://www.axios.com/2025/03/03/auto-insurance-vehicles-cars-trucks-suvs]
 2. Average collision claim frequency is once every 17.9 years.^[Source: https://www.ppdlawoffice.com/blog/2020/09/average-number-of-car-accidents-in-a-lifetime-and-avoiding-them/]
-3.  U.S. drivers drive an average of 13,476 annual miles.^[Source: Federal Highway Administration, https://www.fhwa.dot.gov/ohim/onh00/bar8.htm]. 
+3.  U.S. drivers drive an average of 13,476 annual miles.^[Source: Federal Highway Administration, https://www.fhwa.dot.gov/ohim/onh00/bar8.htm]
 
 Using these three real-world statistics, the rate parameter, $\lambda$, of the exponential distribution was estimated to be 0.000001119308.
 
@@ -329,7 +323,7 @@ accident_rate <- 1/avg_miles_between_totaled_collision
 
 # ---- Findings ----
 
-  # It should be noted that the claims proportion for total-loss has been high the past couple of years to due increases in cost of parts and other post-COVID factors. Thus, although the rate calculated here is small, it is actually larger than in other previous years. 
+  # It should be noted that the claims proportion for total-loss has been high the past couple of years due to increases in cost of parts and other post-COVID factors. Thus, although the rate calculated here is small, it is actually larger than in other previous years. 
   # Additionally, we must note that not all crashes/accidents are claimed by drivers, thus it is possible that this total-loss claims rate is inflated.
 ```
 
@@ -347,7 +341,7 @@ With a $\lambda$ of 0.000001119308, we produce the following exponential distrib
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 4: Exponential Distribution of Simulated Total-loss Accident Mileages ($T_a$)."
+#| fig-cap: "Figure 3: Exponential Distribution of Simulated Total-loss Accident Mileages ($T_a$)."
 #| fig-align: center
 #| results: hide
 
@@ -427,7 +421,7 @@ Observing the boxplot above, extreme and unrealistic observations (like the maxi
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 5: Distribution of Simulated Car Lifetime Mileages ($T$)."
+#| fig-cap: "Figure 4: Distribution of Simulated Car Lifetime Mileages ($T$)."
 #| fig-align: center
 #| results: hide
 
@@ -519,7 +513,7 @@ Observing the boxplot above, extreme and unrealistic observations (like the maxi
         plot_layout(heights = c(4, 1)) 
 ```
 
-Figure 5 depicts the distribution of $T$, the variable representing a car's total lifetime mileage before failure. As a reminder, this distribution was constructed from the mechanical retirement mileage distribution and the total-loss accident mileage distribution shown in Figures 3 and 4, respectively, using the following procedure: $T = min(T_m, T_a)$.
+Figure 4 depicts the distribution of $T$, the variable representing a car's total lifetime mileage before failure. As a reminder, this distribution was constructed from the mechanical retirement mileage distribution and the total-loss accident mileage distribution shown in Figures 2 and 3, respectively, using the following procedure: $T = min(T_m, T_a)$.
 
 The distribution of $T$ resembles that of the Weibull distribution for mechanical retirement mileage, but is shifted further to the left. This shift is expected, as some cars that would have otherwise lasted longer mechanically are instead removed from operation earlier due to a total-loss accident, as described by the competing risks framework.
 
@@ -528,7 +522,7 @@ This can be observed more clearly by comparing the boxplots of mechanical retire
 ```{r}
 #| fig-width: 9
 #| fig-height: 8
-#| fig-cap: "Figure 6: Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom)."
+#| fig-cap: "Figure 5: Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom)."
 #| fig-align: center
 #| results: hide
 
@@ -549,12 +543,12 @@ Additionally, because the distribution of car lifetime mileages takes the minimu
 
 ### Car Survival Curve by Mileage
 
-Figure 7 below illustrates the survival probabilities of cars at various mileages. The risk table at the bottom shows the number of cars still at risk of becoming unusable, denoted as "At Risk," and the number of cars that have already become unusable, denoted as "Events," at each major mileage. Additionally, as hypothesized in Section 2.5.1, the survival function does decrease as mileage increases. 
+Figure 6 below illustrates the survival probabilities of cars at various mileages. The risk table at the bottom shows the number of cars still at risk of becoming unusable, denoted as "At Risk," and the number of cars that have already become unusable, denoted as "Events," at each major mileage. Additionally, as hypothesized in Section 2.5.1, the survival function does decrease as mileage increases. 
 
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 7: Car Survival Curve by Mileage."
+#| fig-cap: "Figure 6: Car Survival Curve by Mileage."
 #| fig-align: center
 #| results: hide
 
@@ -571,10 +565,10 @@ vehicle_lifetime <- vehicle_lifetime |>
 
 surv_object <- Surv(vehicle_lifetime$RAWvehicle_lifetime, vehicle_lifetime$Status)
 
-# Create Survival curves using Kaplan-Meier Method
+# Create Survival curve
 
-s1 <- survfit(surv_object ~ 1, data = vehicle_lifetime) # Overall Kaplan-Meier Survival Curve
-str(s1)
+s1 <- survfit(surv_object ~ 1, data = vehicle_lifetime)
+
 
 survival_curve <- survfit2(surv_object ~ 1, data = vehicle_lifetime) |> 
   ggsurvfit(color = "steelblue") +
@@ -590,14 +584,14 @@ survival_curve
 
 ```
 
-Figure 7 is particularly important because it will serve as the source for tabulating survival probabilities at specific mileages.
+Figure 6 is particularly important because it will serve as the source for tabulating survival probabilities at specific mileages.
 
-To verify that the Monte Carlo simulations used to build the survival model produced appropriate results, we can compare the simulated survival model with the theoretical (mathematical) survival model. In this context, the theoretical survival model describes the theoretical probability (not probabilities based on simulation) that a car survives both mechanical retirement and total-loss accidents. Because the two risks are assumed to be independent in this project, the overall theoretical survival function is the product of the mechanical retirement and total-loss accident survival functions. Figure 8 overlays the simulated and theoretical survival curves to allow for a direct comparison.
+To verify that the Monte Carlo simulations used to build the survival model produced appropriate results, we can compare the simulated survival model with the theoretical (mathematical) survival model. In this context, the theoretical survival model describes the theoretical probability (not probabilities based on simulation) that a car survives both mechanical retirement and total-loss accidents. Because the two risks are assumed to be independent in this project, the overall theoretical survival function is the product of the mechanical retirement and total-loss accident survival functions. Figure 7 overlays the simulated and theoretical survival curves to allow for a direct comparison.
 
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 8: Theortical Survival Curve (yellow) Overlaid on Simulated Survival Curve (black) for Car Lifetime Mileage."
+#| fig-cap: "Figure 7: Theoretical Survival Curve (yellow) Overlaid on Simulated Survival Curve (blue) for Car Lifetime Mileage."
 #| fig-align: center
 #| results: hide
 
@@ -606,21 +600,21 @@ To verify that the Monte Carlo simulations used to build the survival model prod
 
   # We define survival as surviving both mechanical retirement and total-loss accidents. Because both events are independent, we multiply their survival functions to create an overall survival function. 
 
-  theortical_survival <- function(t, shape, scale, rate) {
+  theoretical_survival <- function(t, shape, scale, rate) {
     weibull_part <- exp(-(t/scale)^shape)
     exponential_part <- exp(-rate*t)
     survival_prob <- weibull_part * exponential_part
     return(survival_prob)
   }
 
-  milerange <- seq(2, 441380.8, by = 2)
-  Survtheortical_curve <- theortical_survival(milerange, best_shape, best_scale, accident_rate)
+  milerange <- seq(2, max(RAWvehicle_lifetime), by = 2)
+  Survtheoretical_curve <- theoretical_survival(milerange, best_shape, best_scale, accident_rate)
 
   # Creating a dataframe of survival values and mileage
 
-  Survtheoertical_df <- data.frame(Mileage = milerange, Survival = Survtheortical_curve)
+  Survtheoertical_df <- data.frame(Mileage = milerange, Survival = Survtheoretical_curve)
 
-  # Overlaying Simulated Survival Curve with the Theortical Survival Curve created above 
+  # Overlaying Simulated Survival Curve with the Theoretical Survival Curve created above 
 
   survival_curve +
     geom_line(
@@ -631,53 +625,70 @@ To verify that the Monte Carlo simulations used to build the survival model prod
     ) +
     labs(
       title = "Probability of Car Survival by Mileage",
-      subtitle = "Simulated (black) vs. Theoretical (yellow) Survival Curve"
+      subtitle = "Simulated (blue) vs. Theoretical (yellow) Survival Curve"
     ) +
     theme(plot.title = element_text(face = "bold", size = 16), plot.subtitle = element_text(size = 14), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
 ```
 
-As seen above, the simulated survival curve does closely follow the theoretical survival curve, indicating that our Monte Carlo simulations produce results consistent with the mathematical model.
+As seen above, the simulated survival curve does closely follow the theoretical survival curve, indicating that our Monte Carlo simulations did produce results consistent with the mathematical model.
 
 ### Survival Probabilities
 
-Using Figure 7, we can now tabulate survival probabilities at specific mileages to create a survival table.
+Using Figure 6, we can now tabulate survival probabilities at specific mileages to create a survival table.
 
-```{r echo=FALSE, fig.cap="Figure 9: Tabulated Survival Probabilities of Various Car Lifetime Mileages.", out.width="46%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Figure 8: Tabulated Survival Probabilities of Various Car Lifetime Mileages.", out.width="46%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("TabulatedProbs.png")
 ```
 
-Based on the survival table above, we can observe that the survival probability reaches approximately 50% between 125,000 and 150,000 miles. This means that a vehicle with a lifetime mileage between 125,000 and 150,000 miles has approximately a 50% probability of surviving beyond its current mileage. 
-
-Additionally, note the sharp decrease in survival probability between 225,000 and 250,000 miles. This makes sense, as relatively few cars last beyond 225,000 miles, let alone 250,000 miles.
-
-Lastly, it is worth noting that our estimated survival probabilities do somewhat align with available real-world statistics. For example, our model estimates that a vehicle has a 6.46% probability of surviving beyond 250,000 miles, while real-world statistics suggest that the probability of a vehicle reaching 250,000 miles is approximately 5.4%^[Source: https://www.iseecars.com/longest-lasting-cars-study]. Although these estimates differ slightly, they are still relatively close, which suggests that our model does produce reasonably realistic survival estimates.
+Based on the survival table above, we can observe that the survival probability reaches approximately 50% between 125,000 and 150,000 miles. This means that a vehicle with a mileage between 125,000 and 150,000 miles has approximately a 50% probability of surviving beyond its current mileage. 
 
 ## Analysis of Expected Remaining Mileage Based on Current Mileage of Car
 
 
-While the survival curve in Figure 7 and survival table in Figure 8 describes the overall probability that a car survives past its current mileage, it does not necessarily answer a question that many owners have: given that my car has already reached a certain mileage, how many additional miles can it be expected to operate for?
+While the survival curve in Figure 6 and survival table in Figure 8 describe the overall probability that a car survives past its current mileage, it does not necessarily answer a question that many owners have: given that my car has already reached a certain mileage, how many additional miles can it be expected to operate for?
 
 This section addresses that question using the concept of mean residual life, as introduced in Section 2.6. Here, mean residual life values are referred to as Expected Remaining Miles.
 
-```{r echo=FALSE, fig.cap="Figure 10: Expected Remaining Mileage Based on Current Car Mileage.", out.width="105%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Figure 9: Expected Remaining Mileage Based on Current Car Mileage.", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("ExpectedMileage.png")
 ```
 
-Figure 10 above shows the relationship between expected remaining mileage and current mileage across the full range of simulated car lifetime mileages, whose distribution is shown in Figure 5. As expected, expected remaining mileage declines as current mileage increases and appears to follow a polynomial or exponential trend. This trend is clearest between 0 and 300,000 miles; however, beyond approximately 400,000 miles, the curve becomes increasingly jagged and more difficult to interpret.
+Figure 9 above shows the relationship between expected remaining mileage and current mileage across the full range of simulated car lifetime mileages, whose distribution is shown in Figure 4. As expected, expected remaining mileage declines as current mileage increases and appears to follow a polynomial or exponential trend. This trend is clearest between 0 and 300,000 miles; however, beyond approximately 400,000 miles, the curve becomes increasingly jagged and more difficult to interpret.
 
-This jaggedness is expected, as relatively few simulated vehicles survive to such high mileages. Recall from Figure 7 that at 400,000 miles, only 15 of the original 100,000 simulated vehicles remain. Because the calculation of mean residual life involves taking a mean, estimates based on a smaller number of observations are inherently more susceptible to random variation. Therefore, estimates of expected remaining mileage above 400,000 miles are inherently less stable than those at lower mileages, where more simulated vehicles remain. This increased variability contributes to the jaggedness observed toward the end of the curve in Figure 11. For this reasons, and because such few car survive beyond 400,000 miles, it would be appropriate to limit the model to 400,000 miles. 
+This jaggedness is expected, as relatively few simulated vehicles survive to such high mileages. Recall from Figure 6 that at 400,000 miles, only 15 of the original 100,000 simulated vehicles remain. Because the calculation of mean residual life involves taking a mean, estimates based on a smaller number of observations are inherently more susceptible to random variation. Therefore, estimates of expected remaining mileage above 400,000 miles are inherently less stable than those at lower mileages, where more simulated vehicles remain. This increased variability contributes to the jaggedness observed toward the end of the curve in Figure 9. For these reasons, and because so few car survive beyond 400,000 miles, it would be appropriate to limit the model to 400,000 miles. 
 
-The resulting model is shown in Figure 11.
+The resulting model is shown in Figure 10.
 
-```{r echo=FALSE, fig.cap="Figure 11: Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.", out.width="105%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Figure 10: Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("FilteredExpectedMileage.png")
 ```
 
 As mentioned earlier, the relationship between expected remaining mileage and current mileage appears to follow either a polynomial or an exponential trend. Although identifying the underlying trend is not the main focus of this project, it would still be insightful to get a general idea of which model best captures the trend. Therefore, let us fit several models to the expected remaining mileage data and visually compare their fits to the expected remaining mileage curve to determine which model best captures the trend.
 
-```{r echo=FALSE, fig.cap="Figure 12: Identifying the Best-Fit Model for Expected Remaining Mileage Estimates", out.width="100%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Figure 11: Identifying the Best-Fit Model for Expected Remaining Mileage Estimates", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("ModelComparisons.png")
 ```
 
-As observed in Figure 12, the cubic model appears to provide the best fit to the expected remaining mileage data and curve, out of all the models shown. Therefore, expected remaining mileage could follow a cubic trend. 
+As observed in Figure 11, the cubic model appears to provide the best fit to the expected remaining mileage data and curve, out of all the models shown.
 
+# Limitations
+
+- While the results of this project provide a generalization of car lifetimes, not all cars are created equal. Some cars are more reliable than others, meaning that they operate for far more miles before reaching the end of their service life. Thus, our results may not fully generalize to cars that are considered particularly unreliable or highly reliable, as their mileage lifetimes may differ from those in our model.
+
+- While this project was supplemented with real-world statistics, the model produced is still theoretical in nature. This is because the model was constructed using simulations and selected real-world statistics, not a dataset of actual car lifetimes. Therefore, caution should be taken when generalizing our results to actual car lifetime mileages.
+
+- While we assumed that mechanical retirement and total-loss accidents are independent for simplicity, it could be that these two factors are dependent. For example, cars with pre-existing mechanical damage may be more likely to be declared a total loss following an accident, as the additional damage from the accident may make repairs economically impractical. Thus, assuming mechanical retirement and total-loss accidents are independent may not fully represent the actual relationship between these two risks.
+
+- Some of the real-world statistics used in this project are not recent, so the model may not reflect current trends in vehicle lifetime. Additionally, the statistics used to construct the Weibull distribution for mechanical retirement may have also included the effect of accidents. Unfortunately, there is not much that can be done as this is simply the nature of the statistic. Nevertheless, it is fair to assume that accidents are a relatively small share of why vehicles get retired compared to mechanical wear-out."
+
+- The model assumes that each car is never resold and is driven by a single owner for its entire lifetime until it becomes unusable. This limits what cars we can generalize our findings to.
+
+# Future Work
+
+Future work could extend this analysis to cars with different levels of reliability to account for a larger scope of vehicles. Different levels of reliability could be modeled by adjusting the Weibull parameters used for mechanical retirement mileage, while keeping the total-loss accident model unchanged across groups. 
+
+# Summary
+
+In summary, this project developed a method for modeling car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.
+
+Although these results provide useful insights into car longevity, it is still important to recognize that the model is theoretical and relies on assumptions that may not fully reflect the real world. Nevertheless, this project provides a starting point for modeling car longevity and offers useful insights for the average consumer looking to estimate how much longer their car might last and the probability of it reaching a certain mileage.
