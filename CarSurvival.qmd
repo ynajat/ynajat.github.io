@@ -1,6 +1,7 @@
 ---
-title: "**Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach to Mechanical Failure and Total-loss Accidents**"
+title: "**Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach**"
 author: "**Yousif Najat**"
+date: July 2026
 format: 
     html:
       code-fold: true
@@ -688,6 +689,6 @@ Future work could extend this analysis to cars with different levels of reliabil
 
 # Summary
 
-In summary, this project developed a method for modeling car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.
+In summary, this project developed a model for car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.
 
 Although these results provide useful insights into car longevity, it is still important to recognize that the model is theoretical and relies on assumptions that may not fully reflect the real world. Nevertheless, this project provides a starting point for modeling car longevity and offers useful insights for the average consumer looking to estimate how much longer their car might last and the probability of it reaching a certain mileage.

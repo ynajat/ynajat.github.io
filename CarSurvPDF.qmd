@@ -1,7 +1,8 @@
 
 ---
-title: "**Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach to Mechanical Failure and Total-loss Accidents**"
+title: "**Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach**"
 author: "**Yousif Najat**"
+date: "July 2026"
 format:
   pdf:
     documentclass: article
@@ -132,7 +133,7 @@ In this project, the survival function represents the probability that a vehicle
 
 While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator, especially if censored observations are present.^[For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/] Below is an example of a survival curve created using the Kaplan-Meier method:
 
-```{r fig1, echo=FALSE, fig.cap="Figure 1: Kaplan-Meier Curve for Lung Cancer Survival. Source: Bioconductor Survival Workshop (https://bioconnector.github.io/workshops/r-survival.html).", out.width="46%", fig.align="center", fig.pos="H"}
+```{r fig1, echo=FALSE, fig.cap="Kaplan-Meier Curve for Lung Cancer Survival. Source: Bioconductor Survival Workshop (https://bioconnector.github.io/workshops/r-survival.html).", out.width="46%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("KMCurveLung.png")
 ```
 
@@ -370,7 +371,7 @@ With a $\lambda$ of 0.000001119308, we produce the following exponential distrib
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 3: Exponential Distribution of Simulated Total-loss Accident Mileages ($T_a$)."
+#| fig-cap: "Exponential Distribution of Simulated Total-loss Accident Mileages ($T_a$)."
 #| fig-align: center
 #| results: hide
 
@@ -450,7 +451,7 @@ Observing the boxplot above, extreme and unrealistic observations (like the maxi
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 4: Distribution of Simulated Car Lifetime Mileages ($T$)."
+#| fig-cap: "Distribution of Simulated Car Lifetime Mileages ($T$)."
 #| fig-align: center
 #| results: hide
 
@@ -551,7 +552,7 @@ This can be observed more clearly by comparing the boxplots of mechanical retire
 ```{r}
 #| fig-width: 9
 #| fig-height: 8
-#| fig-cap: "Figure 5: Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom)."
+#| fig-cap: "Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom)."
 #| fig-align: center
 #| results: hide
 
@@ -577,7 +578,7 @@ Figure 6 below illustrates the survival probabilities of cars at various mileage
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 6: Car Survival Curve by Mileage."
+#| fig-cap: "Car Survival Curve by Mileage."
 #| fig-align: center
 #| results: hide
 
@@ -620,7 +621,7 @@ To verify that the Monte Carlo simulations used to build the survival model prod
 ```{r}
 #| fig-width: 11
 #| fig-height: 10
-#| fig-cap: "Figure 7: Theoretical Survival Curve (yellow) Overlaid on Simulated Survival Curve (blue) for Car Lifetime Mileage."
+#| fig-cap: "Theoretical Survival Curve (yellow) Overlaid on Simulated Survival Curve (blue) for Car Lifetime Mileage."
 #| fig-align: center
 #| results: hide
 
@@ -665,7 +666,7 @@ As seen above, the simulated survival curve does closely follow the theoretical 
 
 Using Figure 6, we can now tabulate survival probabilities at specific mileages to create a survival table.
 
-```{r echo=FALSE, fig.cap="Figure 8: Tabulated Survival Probabilities of Various Car Lifetime Mileages.", out.width="46%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Tabulated Survival Probabilities of Various Car Lifetime Mileages.", out.width="46%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("TabulatedProbs.png")
 ```
 
@@ -678,7 +679,7 @@ While the survival curve in Figure 6 and survival table in Figure 8 describe the
 
 This section addresses that question using the concept of mean residual life, as introduced in Section 2.6. Here, mean residual life values are referred to as Expected Remaining Miles.
 
-```{r echo=FALSE, fig.cap="Figure 9: Expected Remaining Mileage Based on Current Car Mileage.", out.width="100%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Expected Remaining Mileage Based on Current Car Mileage.", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("ExpectedMileage.png")
 ```
 
@@ -688,13 +689,13 @@ This jaggedness is expected, as relatively few simulated vehicles survive to suc
 
 The resulting model is shown in Figure 10.
 
-```{r echo=FALSE, fig.cap="Figure 10: Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.", out.width="100%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("FilteredExpectedMileage.png")
 ```
 
 As mentioned earlier, the relationship between expected remaining mileage and current mileage appears to follow either a polynomial or an exponential trend. Although identifying the underlying trend is not the main focus of this project, it would still be insightful to get a general idea of which model best captures the trend. Therefore, let us fit several models to the expected remaining mileage data and visually compare their fits to the expected remaining mileage curve to determine which model best captures the trend.
 
-```{r echo=FALSE, fig.cap="Figure 11: Identifying the Best-Fit Model for Expected Remaining Mileage Estimates", out.width="100%", fig.align="center", fig.pos="H"}
+```{r echo=FALSE, fig.cap="Identifying the Best-Fit Model for Expected Remaining Mileage Estimates", out.width="100%", fig.align="center", fig.pos="H"}
 knitr::include_graphics("ModelComparisons.png")
 ```
 
@@ -718,6 +719,6 @@ Future work could extend this analysis to cars with different levels of reliabil
 
 # Summary
 
-In summary, this project developed a method for modeling car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.
+In summary, this project developed a model for car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.
 
 Although these results provide useful insights into car longevity, it is still important to recognize that the model is theoretical and relies on assumptions that may not fully reflect the real world. Nevertheless, this project provides a starting point for modeling car longevity and offers useful insights for the average consumer looking to estimate how much longer their car might last and the probability of it reaching a certain mileage.
