@@ -13,11 +13,11 @@ website:
           - text: "Pell Grant"
             href: pellgrant.html
           - text: "Astronaut Mission Duration"
-            href: astronauts.html
+            href: astronauts.qmdastronauts.html
           - text: "SMS Messages"
-            href: project2.html
+            href: SMSProject/project2.html
       - text: Car Lifetime Project
-        href: CarSurvival.html
+        href: CarSurvivalProject/CarSurvival.html
 
 
 format:

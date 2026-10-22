@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yousif Najat">
+<meta name="dcterms.date" content="2026-07-01">
+
+<title>Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach – Yousif Najat</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-9d96f532d65220ca877c0304385df42f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+</head><body class="nav-fixed quarto-light">\usepackage{xcolor}
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf,textfont=normalfont,position=bottom,skip=8pt}
+\captionsetup[table]{labelfont=bf,textfont=normalfont,position=top,skip=8pt}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.12}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Yousif Najat</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-data-viz" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Data Viz</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-data-viz">    
+        <li>
+    <a class="dropdown-item" href="../pellgrant.html">
+ <span class="dropdown-text">Pell Grant</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../astronauts.qmdastronauts.html">
+ <span class="dropdown-text">Astronaut Mission Duration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../project2.html">
+ <span class="dropdown-text">SMS Messages</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../CarSurvivalProject/CarSurvival.html"> 
+<span class="menu-text">Car Lifetime Project</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#project-overview" id="toc-project-overview" class="nav-link active" data-scroll-target="#project-overview">Project Overview</a></li>
+  <li><a href="#background-methodology" id="toc-background-methodology" class="nav-link" data-scroll-target="#background-methodology">Background &amp; Methodology</a>
+  <ul class="collapse">
+  <li><a href="#modeling-mechanical-retirement-weibull-distribution" id="toc-modeling-mechanical-retirement-weibull-distribution" class="nav-link" data-scroll-target="#modeling-mechanical-retirement-weibull-distribution">Modeling Mechanical Retirement: Weibull Distribution</a>
+  <ul class="collapse">
+  <li><a href="#shape-parameter-k" id="toc-shape-parameter-k" class="nav-link" data-scroll-target="#shape-parameter-k">Shape Parameter (<span class="math inline">\(k\)</span>)</a></li>
+  <li><a href="#scale-parameter-lambda" id="toc-scale-parameter-lambda" class="nav-link" data-scroll-target="#scale-parameter-lambda">Scale Parameter (<span class="math inline">\(\lambda\)</span>)</a></li>
+  </ul></li>
+  <li><a href="#modeling-total-loss-accidents-exponential-distribution" id="toc-modeling-total-loss-accidents-exponential-distribution" class="nav-link" data-scroll-target="#modeling-total-loss-accidents-exponential-distribution">Modeling Total-loss Accidents: Exponential Distribution</a></li>
+  <li><a href="#simulating-car-lifetimes-monte-carlo-simulations" id="toc-simulating-car-lifetimes-monte-carlo-simulations" class="nav-link" data-scroll-target="#simulating-car-lifetimes-monte-carlo-simulations">Simulating Car Lifetimes: Monte Carlo Simulations</a></li>
+  <li><a href="#building-a-model-for-car-lifetimes-competing-risks" id="toc-building-a-model-for-car-lifetimes-competing-risks" class="nav-link" data-scroll-target="#building-a-model-for-car-lifetimes-competing-risks">Building a Model for Car Lifetimes: Competing Risks</a></li>
+  <li><a href="#survival-analysis" id="toc-survival-analysis" class="nav-link" data-scroll-target="#survival-analysis">Survival Analysis</a>
+  <ul class="collapse">
+  <li><a href="#survival-functions-curves" id="toc-survival-functions-curves" class="nav-link" data-scroll-target="#survival-functions-curves">Survival Functions &amp; Curves</a></li>
+  </ul></li>
+  <li><a href="#calculating-remaining-expected-mileage-a-mean-residual-life-approach" id="toc-calculating-remaining-expected-mileage-a-mean-residual-life-approach" class="nav-link" data-scroll-target="#calculating-remaining-expected-mileage-a-mean-residual-life-approach">Calculating Remaining Expected Mileage: A Mean Residual Life Approach</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#weibull-distribution-for-mechanical-retirement-mileage" id="toc-weibull-distribution-for-mechanical-retirement-mileage" class="nav-link" data-scroll-target="#weibull-distribution-for-mechanical-retirement-mileage">Weibull Distribution for Mechanical Retirement Mileage</a></li>
+  <li><a href="#exponential-distribution-for-total-loss-accident-mileage" id="toc-exponential-distribution-for-total-loss-accident-mileage" class="nav-link" data-scroll-target="#exponential-distribution-for-total-loss-accident-mileage">Exponential Distribution for Total-loss Accident Mileage</a>
+  <ul class="collapse">
+  <li><a href="#parameter-lambda" id="toc-parameter-lambda" class="nav-link" data-scroll-target="#parameter-lambda">Parameter (<span class="math inline">\(\lambda\)</span>)</a></li>
+  <li><a href="#exponential-distribution" id="toc-exponential-distribution" class="nav-link" data-scroll-target="#exponential-distribution">Exponential Distribution</a></li>
+  </ul></li>
+  <li><a href="#simulated-car-lifetime-distribution" id="toc-simulated-car-lifetime-distribution" class="nav-link" data-scroll-target="#simulated-car-lifetime-distribution">Simulated Car Lifetime Distribution</a></li>
+  <li><a href="#survival-analysis-1" id="toc-survival-analysis-1" class="nav-link" data-scroll-target="#survival-analysis-1">Survival Analysis</a>
+  <ul class="collapse">
+  <li><a href="#car-survival-curve-by-mileage" id="toc-car-survival-curve-by-mileage" class="nav-link" data-scroll-target="#car-survival-curve-by-mileage">Car Survival Curve by Mileage</a></li>
+  <li><a href="#survival-probabilities" id="toc-survival-probabilities" class="nav-link" data-scroll-target="#survival-probabilities">Survival Probabilities</a></li>
+  </ul></li>
+  <li><a href="#analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" id="toc-analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" class="nav-link" data-scroll-target="#analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car">Analysis of Expected Remaining Mileage Based on Current Mileage of Car</a></li>
+  </ul></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="CarSurvPDF.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><strong>Modeling Car Lifetime Using Monte Carlo Simulation and Survival Analysis: A Competing Risks Approach</strong></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><strong>Yousif Najat</strong> </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 1, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="project-overview" class="level1">
+<h1>Project Overview</h1>
+<p>Owning a car can come with a great deal of uncertainty—from the random “Check Engine” light that flashes on an ordinary Tuesday morning to the unexpected accident that takes a vehicle off the road entirely. While some cars remain reliable for hundreds of thousands of miles, others experience major failures much earlier due to mechanical deterioration or collisions. Understanding a car’s lifetime and estimating how much longer a vehicle can be used for are important considerations for manufacturers, warranty providers, insurers, and consumers.</p>
+<p>By simulating thousands of cars and their failures, this project will utilize Monte Carlo simulations and survival analysis to develop a stochastic model for estimating car lifetimes and expected remaining mileage. The model will treat car failure as the result of two independent, competing risks:</p>
+<ol type="1">
+<li><p><strong>Mechanical retirement</strong>, where cumulative wear and deterioration eventually result in a failure that makes a car’s repair economically or practically unreasonable. That said, throughout a car’s lifetime, numerous minor mechanical issues and routine repairs may occur before retirement. Thus, instead of modeling each repair separately, this project groups these smaller repairs into the overall deterioration process and focuses on the point at which the vehicle is ultimately retired due to mechanical trouble.</p></li>
+<li><p><strong>Total-loss accidents</strong>, where a collision renders a car inoperable or uneconomical to repair.</p></li>
+</ol>
+</section>
+<section id="background-methodology" class="level1">
+<h1>Background &amp; Methodology</h1>
+<p>This section introduces the key concepts used to model car lifetimes and estimate expected remaining mileage. These concepts include survival analysis, Weibull and exponential distributions, Monte Carlo simulations, and competing risks.</p>
+<section id="modeling-mechanical-retirement-weibull-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-mechanical-retirement-weibull-distribution">Modeling Mechanical Retirement: Weibull Distribution</h2>
+<p>Formulated by Swedish engineer and mathematician Waloddi Weibull, the Weibull distribution has become a cornerstone of reliability engineering due to its ability to represent different failure patterns depending on its parameter values. For this reason, this project will apply the Weibull distribution to model mechanical retirement mileages, which we will denote by <span class="math inline">\(T_m\)</span>. In other words, <span class="math inline">\(T_m \sim Weibull(k, \lambda)\)</span>, where <span class="math inline">\(k\)</span> is the shape parameter and <span class="math inline">\(\lambda\)</span> is the scale parameter.</p>
+<p>To better understand the Weibull distribution and how the mechanical retirement model will be constructed, it will be important for us to understand these two parameters. Therefore, the two parameters are discussed more in detail below.</p>
+<section id="shape-parameter-k" class="level3">
+<h3 class="anchored" data-anchor-id="shape-parameter-k">Shape Parameter (<span class="math inline">\(k\)</span>)</h3>
+<p>The shape parameter controls how failure risk changes over time in the Weibull distribution.</p>
+<p><span class="math inline">\(k &lt; 1\)</span>: Decreasing Failure Risk</p>
+<ul>
+<li>This represents situations where early failures are caused by defects, and surviving components become more reliable over time.</li>
+</ul>
+<p><span class="math inline">\(k = 1\)</span>: Constant Failure Risk</p>
+<ul>
+<li>This is equivalent to an exponential distribution, where failure risk is independent of the variable it’s measured against.</li>
+</ul>
+<p><span class="math inline">\(k &gt; 1\)</span>: Increasing Failure Risk</p>
+<ul>
+<li>This represents aging and deterioration, where failure risk increases over time.</li>
+<li>There are varying levels for <span class="math inline">\(k\)</span> values over 1, each with their own meaning and use.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+</ul>
+<p>Because cars generally become more likely to experience mechanical issues as mileage increases (as mechanical parts age and wear out with more use), this project will use a Weibull distribution with <span class="math inline">\(k &gt; 1\)</span>.</p>
+</section>
+<section id="scale-parameter-lambda" class="level3">
+<h3 class="anchored" data-anchor-id="scale-parameter-lambda">Scale Parameter (<span class="math inline">\(\lambda\)</span>)</h3>
+<p>The scale parameter defines the spread of the Weibull distribution and can either stretch or compress the distribution. It also represents the 63.2nd percentile.</p>
+</section>
+</section>
+<section id="modeling-total-loss-accidents-exponential-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-total-loss-accidents-exponential-distribution">Modeling Total-loss Accidents: Exponential Distribution</h2>
+<p>Mechanical deterioration is not the only reason vehicles stop operating. A car may also be destroyed through a total-loss accident, defined as an accident that results in irreparable damage or damage to the point where repair costs outweigh the car’s value.</p>
+<p>Unlike mechanical retirement, which is expected to become more likely as a car accumulates mileage, this project assumes that the risk of experiencing a total-loss accident per mile remains approximately constant and independent of mechanical retirement. In other words, the model assumes that the rate of total-loss accidents does not change with accumulated mileage and that the occurrence of a total-loss accident is independent of the mechanical retirement process.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>Because of these assumptions, the mileage at which total-loss accidents occur can be appropriately modeled with an exponential distribution, <span class="math inline">\(T_a \sim Exponential(\lambda)\)</span>, where <span class="math inline">\(T_a\)</span> is the variable representing the mileage at which a total-loss accident occurs and <span class="math inline">\(\lambda\)</span> is the constant rate of occurrence for total-loss accidents.</p>
+<p>In this project, <span class="math inline">\(\lambda\)</span> will also be estimated using real-world statistics.</p>
+</section>
+<section id="simulating-car-lifetimes-monte-carlo-simulations" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-car-lifetimes-monte-carlo-simulations">Simulating Car Lifetimes: Monte Carlo Simulations</h2>
+<p>Named after the famous casino town of Monte Carlo, Monte Carlo simulations have become powerful tools for estimating possible outcomes when dealing with uncertain events. By repeatedly sampling random values from probability distributions, these simulations generate a range of possible outcomes which can help us understand their likelihood.</p>
+<p>Because of this capability, this project will use Monte Carlo simulations to randomly generate mechanical retirement and total-loss accident mileages from the Weibull and exponential distributions for each simulated vehicle.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> By simulating thousands of vehicles, this approach will produce a distribution of possible car lifetimes, which can then be used to estimate survival probabilities and expected remaining mileage.</p>
+</section>
+<section id="building-a-model-for-car-lifetimes-competing-risks" class="level2">
+<h2 class="anchored" data-anchor-id="building-a-model-for-car-lifetimes-competing-risks">Building a Model for Car Lifetimes: Competing Risks</h2>
+<p>Now that random mileages for mechanical retirement and total-loss accidents have been generated, how is the car lifetime model constructed?</p>
+<p>Because a car can reach the end of its life through either mechanical retirement or a total-loss accident, these risks are considered competing risks. For this reason, vehicle lifetime will be determined by whichever event occurs first, or <span class="math inline">\(T = min(T_m, T_a)\)</span>.</p>
+<p>This competing-risks framework provides a more realistic representation of a vehicle’s lifetime than modeling either risk alone, as it accounts for the probability of either event occurring.</p>
+</section>
+<section id="survival-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="survival-analysis">Survival Analysis</h2>
+<p>Survival analysis provides a set of statistical methods for studying the time until an event of interest occurs. Although it is commonly used in medical research, this project applies survival analysis to car lifetimes, using total mileage as a measure of car lifetime. Specifically, survival analysis will help answer questions such as:</p>
+<ul>
+<li><p>What is the probability that a vehicle survives beyond 100,000 miles?</p></li>
+<li><p>If a vehicle has already accumulated 80,000 miles, how many additional miles can it be expected to travel?</p></li>
+</ul>
+<p>In this context, the event of interest is the end of a vehicle’s use life, and the time variable is measured in total miles driven rather than conventional units of time.</p>
+<p>To answer these questions, this project will focus on generating a survival function and survival curve to estimate the probability that a vehicle remains in service beyond a given mileage. Thus, let’s now delve into survival functions and curves.</p>
+<section id="survival-functions-curves" class="level3">
+<h3 class="anchored" data-anchor-id="survival-functions-curves">Survival Functions &amp; Curves</h3>
+<p>The survival function describes the probability that an individual or system survives beyond a given time <span class="math inline">\(t\)</span>. Mathematically, it is defined as: <span class="math inline">\(S(t) = P(T &gt; t)\)</span> where <span class="math inline">\(T\)</span> represents the total time until the event of interest happens.</p>
+<p>In this project, the survival function represents the probability that a vehicle remains operational beyond a given mileage. For example, <span class="math inline">\(S(150,000) = 0.60\)</span>, indicates that there is a 60% probability that a car survives beyond 150,000 miles.</p>
+<p>While the survival function is the mathematical function, a survival curve is simply the graphical representation of the survival function. These curves are often estimated through a nonparametric method called the Kaplan-Meier estimator, especially if censored observations are present.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Below is an example of a survival curve created using the Kaplan-Meier method:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="KMCurveLung.png" class="img-fluid figure-img" style="width:46.0%"></p>
+<figcaption>Kaplan-Meier Curve for Lung Cancer Survival. Source: Bioconductor Survival Workshop (https://bioconnector.github.io/workshops/r-survival.html).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>For this project, the survival curve is expected to decrease as mileage increases because major vehicle components, such as engines, transmissions, and suspension systems, deteriorate with use, increasing the likelihood of vehicle failure.</p>
+</section>
+</section>
+<section id="calculating-remaining-expected-mileage-a-mean-residual-life-approach" class="level2">
+<h2 class="anchored" data-anchor-id="calculating-remaining-expected-mileage-a-mean-residual-life-approach">Calculating Remaining Expected Mileage: A Mean Residual Life Approach</h2>
+<p>To calculate the expected remaining mileage of a car given that it has already been driven a certain number of miles, this project will utilize a mean residual life approach. Mean residual life provides the expected remaining lifetime of a system given that it has already survived up to a specific point in time.</p>
+<p>To calculate mean residual life, this project will follow these steps:</p>
+<ol type="1">
+<li>Keep only <span class="math inline">\(T&gt;t\)</span> simulated lifetimes where <span class="math inline">\(t\)</span> is the number of miles already driven.</li>
+<li>Calculate the remaining lifetime for each car as <span class="math inline">\(T-t\)</span>.</li>
+<li>Average all remaining lifetimes.</li>
+</ol>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p>This section will provide and expand on the results of this project.</p>
+<section id="weibull-distribution-for-mechanical-retirement-mileage" class="level2">
+<h2 class="anchored" data-anchor-id="weibull-distribution-for-mechanical-retirement-mileage">Weibull Distribution for Mechanical Retirement Mileage</h2>
+<p>Parameter values for the Weibull distribution were solved numerically (Nelder-Mead) using two real-world statistics: an average car has a mean lifespan of 156,470 miles<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>, and an 8.6% probability of lasting beyond 250,000 miles<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. These two statistics were used to solve for the shape and scale parameters, yielding:</p>
+<ul>
+<li><span class="math inline">\(k\)</span> = 2.566597</li>
+<li><span class="math inline">\(\lambda\)</span> = 176,229.10</li>
+</ul>
+<p>With these parameter estimates, we can construct the Weibull distribution used to generate simulated mechanical retirement mileages, shown below.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="864"></p>
+<figcaption>Weibull Distribution of Simulated Mechanical Retirement Mileages (<span class="math inline">\(T_m\)</span>).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exponential-distribution-for-total-loss-accident-mileage" class="level2">
+<h2 class="anchored" data-anchor-id="exponential-distribution-for-total-loss-accident-mileage">Exponential Distribution for Total-loss Accident Mileage</h2>
+<section id="parameter-lambda" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-lambda">Parameter (<span class="math inline">\(\lambda\)</span>)</h3>
+<p>Like the parameter values for the Weibull distribution, the parameter value for the exponential distribution was guided by three real-world statistics:</p>
+<ol type="1">
+<li>Among U.S. collision insurance claims, there is a total-loss claim frequency of 27%.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></li>
+<li>Average collision claim frequency is once every 17.9 years.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
+<li>U.S. drivers drive an average of 13,476 annual miles.<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
+</ol>
+<p>Using these three real-world statistics, the rate parameter, <span class="math inline">\(\lambda\)</span>, of the exponential distribution was estimated to be 0.000001119308.</p>
+<p><strong>Interpretation</strong>: Because <span class="math inline">\(\lambda\)</span> has a direct interpretation in this context, a <span class="math inline">\(\lambda\)</span> of 0.000001119308 implies that approximately 1.12 total-loss accidents are expected to occur per million miles driven, or equivalently, that across a large population of cars, the average number of miles a car drives before experiencing a total-loss accident is approximately 893,408.90 miles.</p>
+<p>It is important to notice the particularly high mileage between total-loss accidents, indicating that the rate of occurrence of total-loss accidents is low. This is not entirely incorrect, as total-loss accidents represent relatively uncommon events: while collisions occur frequently, most accidents do not result in a vehicle being declared a total loss.</p>
+<p>On the other hand, this result may also seem contradictory, as the real-world statistic used suggests that 27% of insurance claims are total-loss claims (not as uncommon as thought). However, it is important to recognize that this statistic is measured within an insurance claims context rather than in relation to vehicle mileage. Thus, the two statistics describe total-loss accidents within different contexts and should not be directly compared.</p>
+</section>
+<section id="exponential-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="exponential-distribution">Exponential Distribution</h3>
+<p>With a <span class="math inline">\(\lambda\)</span> of 0.000001119308, we produce the following exponential distribution.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="1056"></p>
+<figcaption>Exponential Distribution of Simulated Total-loss Accident Mileages (<span class="math inline">\(T_a\)</span>).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Observing the boxplot above, extreme and unrealistic observations (like the maximum) do seem to be prevalent; however, these values are expected due to the right-skewed nature of the exponential distribution.</p>
+</section>
+</section>
+<section id="simulated-car-lifetime-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="simulated-car-lifetime-distribution">Simulated Car Lifetime Distribution</h2>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="1056"></p>
+<figcaption>Distribution of Simulated Car Lifetime Mileages (<span class="math inline">\(T\)</span>).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 4 depicts the distribution of <span class="math inline">\(T\)</span>, the variable representing a car’s total lifetime mileage before failure. As a reminder, this distribution was constructed from the mechanical retirement mileage distribution and the total-loss accident mileage distribution shown in Figures 2 and 3, respectively, using the following procedure: <span class="math inline">\(T = min(T_m, T_a)\)</span>.</p>
+<p>The distribution of <span class="math inline">\(T\)</span> resembles that of the Weibull distribution for mechanical retirement mileage, but is shifted further to the left. This shift is expected, as some cars that would have otherwise lasted longer mechanically are instead removed from operation earlier due to a total-loss accident, as described by the competing risks framework.</p>
+<p>This can be observed more clearly by comparing the boxplots of mechanical retirement mileages and car lifetime mileages, as shown below.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="864"></p>
+<figcaption>Boxplot of Simulated Mechanical Retirement Mileage (top) vs Boxplot of Simulated Car Lifetime Mileage (bottom).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Additionally, because the distribution of car lifetime mileages takes the minimum of the two competing risks, the extreme observations in the total-loss accident mileage distribution did not translate into similarly extreme car lifetimes. As a result, the distribution of <span class="math inline">\(T\)</span> contains fewer extreme values and provides a more realistic representation of overall car lifetimes than the total-loss accident mileage distribution alone.</p>
+</section>
+<section id="survival-analysis-1" class="level2">
+<h2 class="anchored" data-anchor-id="survival-analysis-1">Survival Analysis</h2>
+<section id="car-survival-curve-by-mileage" class="level3">
+<h3 class="anchored" data-anchor-id="car-survival-curve-by-mileage">Car Survival Curve by Mileage</h3>
+<p>Figure 6 below illustrates the survival probabilities of cars at various mileages. The risk table at the bottom shows the number of cars still at risk of becoming unusable, denoted as “At Risk,” and the number of cars that have already become unusable, denoted as “Events,” at each major mileage. Additionally, as hypothesized in Section 2.5.1, the survival function does decrease as mileage increases.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1056"></p>
+<figcaption>Car Survival Curve by Mileage.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 6 is particularly important because it will serve as the source for tabulating survival probabilities at specific mileages.</p>
+<p>To verify that the Monte Carlo simulations used to build the survival model produced appropriate results, we can compare the simulated survival model with the theoretical (mathematical) survival model. In this context, the theoretical survival model describes the theoretical probability (not probabilities based on simulation) that a car survives both mechanical retirement and total-loss accidents. Because the two risks are assumed to be independent in this project, the overall theoretical survival function is the product of the mechanical retirement and total-loss accident survival functions. Figure 7 overlays the simulated and theoretical survival curves to allow for a direct comparison.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CarSurvPDF_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1056"></p>
+<figcaption>Theoretical Survival Curve (yellow) Overlaid on Simulated Survival Curve (blue) for Car Lifetime Mileage.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As seen above, the simulated survival curve does closely follow the theoretical survival curve, indicating that our Monte Carlo simulations did produce results consistent with the mathematical model.</p>
+</section>
+<section id="survival-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="survival-probabilities">Survival Probabilities</h3>
+<p>Using Figure 6, we can now tabulate survival probabilities at specific mileages to create a survival table.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="TabulatedProbs.png" class="img-fluid figure-img" style="width:46.0%"></p>
+<figcaption>Tabulated Survival Probabilities of Various Car Lifetime Mileages.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the survival table above, we can observe that the survival probability reaches approximately 50% between 125,000 and 150,000 miles. This means that a vehicle with a mileage between 125,000 and 150,000 miles has approximately a 50% probability of surviving beyond its current mileage.</p>
+</section>
+</section>
+<section id="analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-of-expected-remaining-mileage-based-on-current-mileage-of-car">Analysis of Expected Remaining Mileage Based on Current Mileage of Car</h2>
+<p>While the survival curve in Figure 6 and survival table in Figure 8 describe the overall probability that a car survives past its current mileage, it does not necessarily answer a question that many owners have: given that my car has already reached a certain mileage, how many additional miles can it be expected to operate for?</p>
+<p>This section addresses that question using the concept of mean residual life, as introduced in Section 2.6. Here, mean residual life values are referred to as Expected Remaining Miles.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ExpectedMileage.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Expected Remaining Mileage Based on Current Car Mileage.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 9 above shows the relationship between expected remaining mileage and current mileage across the full range of simulated car lifetime mileages, whose distribution is shown in Figure 4. As expected, expected remaining mileage declines as current mileage increases and appears to follow a polynomial or exponential trend. This trend is clearest between 0 and 300,000 miles; however, beyond approximately 400,000 miles, the curve becomes increasingly jagged and more difficult to interpret.</p>
+<p>This jaggedness is expected, as relatively few simulated vehicles survive to such high mileages. Recall from Figure 6 that at 400,000 miles, only 15 of the original 100,000 simulated vehicles remain. Because the calculation of mean residual life involves taking a mean, estimates based on a smaller number of observations are inherently more susceptible to random variation. Therefore, estimates of expected remaining mileage above 400,000 miles are inherently less stable than those at lower mileages, where more simulated vehicles remain. This increased variability contributes to the jaggedness observed toward the end of the curve in Figure 9. For these reasons, and because so few car survive beyond 400,000 miles, it would be appropriate to limit the model to 400,000 miles.</p>
+<p>The resulting model is shown in Figure 10.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="FilteredExpectedMileage.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Expected Remaining Mileage Model with Current Mileage Filtered Up to 400,000 Miles.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As mentioned earlier, the relationship between expected remaining mileage and current mileage appears to follow either a polynomial or an exponential trend. Although identifying the underlying trend is not the main focus of this project, it would still be insightful to get a general idea of which model best captures the trend. Therefore, let us fit several models to the expected remaining mileage data and visually compare their fits to the expected remaining mileage curve to determine which model best captures the trend.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ModelComparisons.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Identifying the Best-Fit Model for Expected Remaining Mileage Estimates</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As observed in Figure 11, the cubic model appears to provide the best fit to the expected remaining mileage data and curve, out of all the models shown.</p>
+</section>
+</section>
+<section id="limitations" class="level1">
+<h1>Limitations</h1>
+<ul>
+<li><p>While the results of this project provide a generalization of car lifetimes, not all cars are created equal. Some cars are more reliable than others, meaning that they operate for far more miles before reaching the end of their service life. Thus, our results may not fully generalize to cars that are considered particularly unreliable or highly reliable, as their mileage lifetimes may differ from those in our model.</p></li>
+<li><p>While this project was supplemented with real-world statistics, the model produced is still theoretical in nature. This is because the model was constructed using simulations and selected real-world statistics, not a dataset of actual car lifetimes. Therefore, caution should be taken when generalizing our results to actual car lifetime mileages.</p></li>
+<li><p>While we assumed that mechanical retirement and total-loss accidents are independent for simplicity, it could be that these two factors are dependent. For example, cars with pre-existing mechanical damage may be more likely to be declared a total loss following an accident, as the additional damage from the accident may make repairs economically impractical. Thus, assuming mechanical retirement and total-loss accidents are independent may not fully represent the actual relationship between these two risks.</p></li>
+<li><p>Some of the real-world statistics used in this project are not recent, so the model may not reflect current trends in vehicle lifetime. Additionally, the statistics used to construct the Weibull distribution for mechanical retirement may have also included the effect of accidents. Unfortunately, there is not much that can be done as this is simply the nature of the statistic. Nevertheless, it is fair to assume that accidents are a relatively small share of why vehicles get retired compared to mechanical wear-out.”</p></li>
+<li><p>The model assumes that each car is never resold and is driven by a single owner for its entire lifetime until it becomes unusable. This limits what cars we can generalize our findings to.</p></li>
+</ul>
+</section>
+<section id="future-work" class="level1">
+<h1>Future Work</h1>
+<p>Future work could extend this analysis to cars with different levels of reliability to account for a larger scope of vehicles. Different levels of reliability could be modeled by adjusting the Weibull parameters used for mechanical retirement mileage, while keeping the total-loss accident model unchanged across groups.</p>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>In summary, this project developed a model for car lifetime by combining Monte Carlo simulation, survival analysis, and a competing-risks framework. Accounting for both mechanical retirement and total-loss accidents, we constructed a distribution of simulated car lifetime mileages and examined how survival probability changes with mileage. Additionally, our analysis was extended further by applying the concept of mean residual life to estimate a car’s expected remaining mileage based on its current mileage.</p>
+<p>Although these results provide useful insights into car longevity, it is still important to recognize that the model is theoretical and relies on assumptions that may not fully reflect the real world. Nevertheless, this project provides a starting point for modeling car longevity and offers useful insights for the average consumer looking to estimate how much longer their car might last and the probability of it reaching a certain mileage.</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>For more information, see here: https://support.ptc.com/help/wrr/r13.0.1.0/en/index.html#page/wrr/PractitionersGuide/UnderstandingWeibullAnalysis.html<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>To further reiterate, these are <em>assumptions</em> made within this particular model and may not fully represent reality. In practice, total-loss accident risk may depend on many factors, including driving behavior, road conditions, weather, vehicle usage, geographic location, and the number of miles driven. While these factors may influence the true risk and rate of total-loss accidents, assuming a constant accident rate provides a simplified framework for understanding car lifetime mileages.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Monte Carlo simulations are also used here as there is no available dataset that provides exact mileages with every time a car has experienced mechanical retirement or total-loss accidents. Rather, we only know the probability distributions that describe these risks and basic real-world statistics, which is enough to run Monte Carlo simulations.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>For more information, see here: https://pmc.ncbi.nlm.nih.gov/articles/PMC3059453/<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Source: https://autorecyclingworld.com/what-is-the-lifespan-of-a-vehicle-in-the-usa/<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Source: https://fox4kc.com/automotive/the-longest-lasting-cars-trucks-and-suvs-to-reach-250000-miles-and-beyond-2/<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Source: https://www.axios.com/2025/03/03/auto-insurance-vehicles-cars-trucks-suvs<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Source: https://www.ppdlawoffice.com/blog/2020/09/average-number-of-car-accidents-in-a-lifetime-and-avoiding-them/<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Source: Federal Highway Administration, https://www.fhwa.dot.gov/ohim/onh00/bar8.htm<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
