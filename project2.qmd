@@ -116,7 +116,7 @@ sms_words <- sms |>
     mutate(Message = str_to_lower(Message)) |> 
     mutate(
         Free = str_detect(Message, "\\bfree\\b"),
-        Win = str_detect(Message, "\\bwin\\b | \\bwon\\b"),
+        Win = str_detect(Message, "\\bwin\\b|\\bwon\\b"),
         Claim = str_detect(Message, "\\bclaim\\b"),
         Urgent = str_detect(Message, "\\burgent\\b"),
         Prize = str_detect(Message, "\\bprize\\b"),
