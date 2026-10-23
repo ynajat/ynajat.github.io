@@ -14,10 +14,14 @@ website:
             href: pellgrant.html
           - text: "Astronaut Mission Duration"
             href: astronauts.qmdastronauts.html
+
+      - text: Projects
+        menu:
+          - text: "Car Lifetime"
+            href: CarSurvivalProject/CarSurvival.html
           - text: "SMS Messages"
             href: SMSProject/project2.html
-      - text: Car Lifetime Project
-        href: CarSurvivalProject/CarSurvival.html
+
 
 
 format:
