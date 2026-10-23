@@ -13,7 +13,7 @@ website:
           - text: "Pell Grant"
             href: pellgrant.html
           - text: "Astronaut Mission Duration"
-            href: astronauts.qmdastronauts.html
+            href: astronauts.html
 
       - text: Projects
         menu:
