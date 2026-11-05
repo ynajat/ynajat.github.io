@@ -21,6 +21,8 @@ website:
             href: CarSurvivalProject/CarSurvival.html
           - text: "SMS Messages"
             href: SMSProject/project2.html
+          - text: "t-Test Simulations"
+            href: t-testproj.qmd
 
 
 

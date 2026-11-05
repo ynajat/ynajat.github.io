@@ -242,4 +242,3 @@ Based on the dataset we utilized and the analysis completed, we can generally ch
 - Containing monetary values of 1,000 or around 1,000.
 
 Therefore, by identifying the patterns and characteristics that distinguish spam messages from ham messages, our analysis has helped establish a clearer definition of spam messages and a general criteria for distinguishing between the two message types.
-
