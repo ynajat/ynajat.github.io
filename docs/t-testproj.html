@@ -9,7 +9,7 @@
 <meta name="author" content="Yousif Najat">
 <meta name="dcterms.date" content="2026-11-04">
 
-<title>Testing Welch’s Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate – Yousif Najat</title>
+<title>Testing Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate – Yousif Najat</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -216,7 +216,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Testing Welch’s Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate</h1>
+<h1 class="title">Testing Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate</h1>
 </div>
 
 
@@ -247,164 +247,208 @@ window.Quarto = {
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Developed by B. L. Welch, Welch’s two-sample t-test provides a statistical method for determining whether the unknown population means of two groups are equivalent when the variances are not equal across the two groups<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Like other statistical tests, Welch’s two-sample t-test relies on the following technical assumptions:</p>
-<ul>
-<li>Observations are continuous (not discrete).</li>
-<li>The two samples are independent, meaning that observations within each sample are independent of one another.</li>
-<li>Each sample is a simple random sample from its population.</li>
-<li>Each sample is collected from a normally distributed population. This condition is especially needed when sample sizes are small such that the Central Limit Theorem does not apply.</li>
-</ul>
-<p>Now, what happens when the normality assumption is not fulfilled? In other words, how does Welch’s two-sample t-test perform when samples are drawn from skewed distributions? How does the Type I error rate—the probability of rejecting a true null hypothesis (a false positive)—change?</p>
+<p>The two-sample t-test provides a statistical method for determining whether the unknown population means of two groups are equivalent. Like other statistical tests, the two-sample t-test relies on many technical assumptions, including the normality assumption, which states that each sample is collected from a normally distributed population.</p>
+<p>Now, what if this normality assumption is not fulfilled? In other words, how does the two-sample t-test perform when samples are drawn from skewed distributions? How does the Type I error rate—the probability of rejecting a true null hypothesis (a false positive)—change?</p>
 <p>This project seeks to answer these questions by exploring the following:</p>
-<p><strong>How does violating the normality assumption of Welch’s two-sample t-test affect its Type I error rate, and can increasing the sample size help reduce the impact?</strong></p>
-<p>This project is motivated by the fact that real world data is rarly perfect, and populations are not always normally distributed. Thus, it becomes particularly important to study how statistical tests perform when the assumptions they rely on are not fully met.</p>
+<p><strong>Assuming all other technical assumptions are met, how does violating the normality assumption of the two-sample t-test affect its Type I error rate, and can increasing the sample size help reduce that impact?</strong></p>
+<section id="why" class="level3">
+<h3 class="anchored" data-anchor-id="why">Why?</h3>
+<p>Because real world data is rarely perfect, and populations are not always normally distributed. Thus, it is important to study how statistical tests—like the two-sample t-test—perform when the assumptions they rely on are not fully met.</p>
+</section>
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
 <section id="simulation-parameters" class="level3">
 <h3 class="anchored" data-anchor-id="simulation-parameters">Simulation Parameters</h3>
 <ul>
-<li>This project will use a significance level (<span class="math inline">\(\alpha\)</span>) of 0.05, or <span class="math inline">\(\alpha\)</span> = 0.05.</li>
-<li>To model violations of the normality assumption, this project will utilize both a right-skewed and a left-skewed population, in which samples will be taken from.</li>
-<li>Additionally, a normally distributed population will be used to help facilitate comparison.</li>
-<li>All distributions will be centered at 0 and have a standard deviation of 1, as a control and a way to solely isolate the effect the distribution shape itself.</li>
-<li>This project will work with group samples sizes of 12, 30, 50, and 100.</li>
+<li>This project will use a significance level of <span class="math inline">\(\alpha\)</span> = 0.05.</li>
+<li>To model violations of the normality assumption, this project will utilize both a moderately and strongly right-skewed population distribution, in which samples will be taken from.</li>
+<li>Additionally, a normally distributed population will be used to help facilitate comparisons.</li>
+<li>This project will work with group sample sizes of 3, 12, 30, 50, 100, and 1000. These sample sizes were specifically chosen to provide a better idea of how the Type I error rate may change across small, medium, and larger sample sizes.</li>
 </ul>
 </section>
 <section id="simulation-hypotheses-for-hypothesis-test" class="level3">
 <h3 class="anchored" data-anchor-id="simulation-hypotheses-for-hypothesis-test">Simulation Hypotheses for Hypothesis Test</h3>
 <p>Let <span class="math inline">\(\mu_{G1}\)</span> represent the population mean of group 1. Let <span class="math inline">\(\mu_{G2}\)</span> represent the population mean of group 2.</p>
-<p><span class="math inline">\(H_0: \mu_{G1} = \mu_{G1}\)</span></p>
-<p><span class="math inline">\(H_A: \mu_{G1} \neq \mu_{G1}\)</span></p>
+<p><span class="math inline">\(H_0: \mu_{G1} = \mu_{G2}\)</span></p>
+<p><span class="math inline">\(H_A: \mu_{G1} \neq \mu_{G2}\)</span></p>
 </section>
 <section id="general-simulation-procedure" class="level3">
 <h3 class="anchored" data-anchor-id="general-simulation-procedure">General Simulation Procedure</h3>
-<p>Having established some set parameters, let’s now describe how we will tackle our project question by looking at what will happen in our simulation:</p>
+<p>Having established some set parameters and stated the null and alternative hypothesis, let’s now explore how we will tackle our project question by describing the general process for what will happen in our simulation:</p>
 <ol type="1">
-<li>Generate two independent samples from the same distribution (either normal, right-skewed, or left-skewed) of same size (either 12, 30, 50, or 100).</li>
-<li>Apply Welch’s two-sample t-test (two-sided) on samples.</li>
-<li>Record the resulting p-value and whether we reject the null hypothesis (<span class="math inline">\(\mu_{G1} = \mu_{G1}\)</span>) at <span class="math inline">\(\alpha\)</span> = 0.05.</li>
-<li>Repeat steps 1-3 for 10,000 times and for all combinations of distributions and sample sizes.</li>
+<li>Generate two independent samples from the same distribution (either normal, moderately right-skewed, or strongly right-skewed) of same size (either 3, 12, 30, 50, 100, or 1000).</li>
+<li>Apply the two-sample t-test (two-sided) to samples.</li>
+<li>Record the resulting p-value and whether we reject the null hypothesis (<span class="math inline">\(\mu_{G1} = \mu_{G2}\)</span>) at <span class="math inline">\(\alpha\)</span> = 0.05.</li>
+<li>Repeat steps 1-3 for 100,000 times (using map functions and others) and for all combinations of distributions and sample sizes.</li>
 </ol>
 </section>
 <section id="post-simulation-procedure-calculating-type-i-error-rate" class="level3">
-<h3 class="anchored" data-anchor-id="post-simulation-procedure-calculating-type-i-error-rate">Post-simulation Procedure: Calculating Type I Error Rate</h3>
-<p>Having collected data on whether each simulation rejected the null hypothesis or not, we can use this to calculate the Type I error rate for all combinations of distributions and sample sizes.</p>
-<p>Recall that both samples in each simulation are taken from the same distribution. Thus, the null hypothesis is always true, since the population of group 1 and group 2 are the same and so the population means are the same for both groups. As a result, any simulation in which Welch’s two-sample t-test rejected the null hypothesis is considered a Type I error.</p>
-<p>Therefore, we can calculate the Type I error rate for each combination as the number of simulations that rejected the null hypothesis for that combination divided by the total number of simulations for that combination.</p>
+<h3 class="anchored" data-anchor-id="post-simulation-procedure-calculating-type-i-error-rate">Post-Simulation Procedure: Calculating Type I Error Rate</h3>
+<p>Now, having collected data on whether each simulation rejected the null hypothesis or not, we can use this to calculate the Type I error rate for all combinations of distributions and sample sizes.</p>
+<p>Recall that both samples in each simulation are taken from the same population distribution. Thus, the null hypothesis is always true as the population means of the two groups are equal since both groups are from the same population. As a result, any simulation in which the two-sample t-test rejects the null hypothesis is considered a Type I error.</p>
+<p>Therefore, we can calculate the Type I error rate for each combination as the number of simulations that rejected the null hypothesis for that combination divided by 100,000 (the total number of simulations for that combination).</p>
 </section>
 </section>
 <section id="simulation-code" class="level2">
 <h2 class="anchored" data-anchor-id="simulation-code">Simulation Code</h2>
 <section id="creating-simulation-functions" class="level3">
 <h3 class="anchored" data-anchor-id="creating-simulation-functions">Creating Simulation Functions</h3>
-<p>First, let’s create the functions that will sample from the normal, right-skewed, and left-skewed population distributions.</p>
+<p>First, let’s create the functions that will randomly sample from the normal, moderately right-skewed, and strongly right-skewed distributions.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sn)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4747</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># We will use rnorm() to draw samples from the normally distributed population.</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a function that will draw samples from the right-skewed population. </span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>right_skew_pop_dist <span class="ot">&lt;-</span> <span class="fu">rsn</span>(<span class="dv">5000000</span>, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">5</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>right_skew_pop_mean <span class="ot">&lt;-</span> <span class="fu">mean</span>(right_skew_pop_dist) <span class="co"># Lets establish an estimate for the right-skewed population mean.</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>right_skew_pop_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(right_skew_pop_dist) <span class="co"># Lets establish an estimate for the right-skewed population standard deviation.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4747</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># We will use rnorm() to draw random samples from the normally distributed population.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a function that will random draw samples from the moderately right-skewed population. </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>mod_right_skew <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rsn</span>(n, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">5</span>) <span class="co"># Here, alpha = 5 represents moderately right-skewed.</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>right_skew <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    ((<span class="fu">rsn</span>(n, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">5</span>)) <span class="sc">-</span> right_skew_pop_mean) <span class="sc">/</span> right_skew_pop_sd <span class="co"># This procedure is done as the right-skewed distribution generated is not centered at 0 and does not a standard deviation of 1; however, we can standardize our samples such that we statisfy this condition. </span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a function that will draw samples from the left-skewed population. </span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>left_skew_pop_dist <span class="ot">&lt;-</span> <span class="fu">rsn</span>(<span class="dv">5000000</span>, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="sc">-</span><span class="dv">5</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>left_skew_pop_mean <span class="ot">&lt;-</span> <span class="fu">mean</span>(left_skew_pop_dist) <span class="co"># Lets establish an estimate for the left-skewed population mean.</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>left_skew_pop_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(left_skew_pop_dist) <span class="co"># Lets establish an estimate for the left-skewed population standard deviation.</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>left_skew <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    ((<span class="fu">rsn</span>(n, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="sc">-</span><span class="dv">5</span>)) <span class="sc">-</span> left_skew_pop_mean) <span class="sc">/</span> left_skew_pop_sd <span class="co"># This procedure is done as the left-skewed distribution generated is not centered at 0 and does not a standard deviation of 1; however, we can standardize our samples such that we statisfy this condition. </span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a function that will draw random samples from the strongly right-skewed population. </span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>ext_right_skew <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rsn</span>(n, <span class="at">xi =</span> <span class="dv">0</span>, <span class="at">omega =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">20</span>) <span class="co"># Here, alpha = 20 represents strongly right-skewed.</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Now, let’s create the functions that will ulitize the functions above to generate two samples and perform Welch’s two-sample t-test on those samples.</p>
+<p>Second, let’s visualize these three distributions.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function that will conduct Welch's two-sample t-test given each group's sample size (n) and a distribution to sample from (func).</span></span>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sim_Wtest <span class="ot">&lt;-</span> <span class="cf">function</span>(n, func){</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert function name from string to function. </span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    func <span class="ot">&lt;-</span> <span class="fu">match.fun</span>(func)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>pop_dist_values <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">norm_values =</span> <span class="fu">rnorm</span>(<span class="dv">5000000</span>), <span class="at">mod_values =</span> <span class="fu">mod_right_skew</span>(<span class="dv">5000000</span>), <span class="at">ext_values =</span> <span class="fu">ext_right_skew</span>(<span class="dv">5000000</span>)) </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize the normal population distribution.</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Generate two samples from same distribution.</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    group1 <span class="ot">&lt;-</span> <span class="fu">func</span>(n)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    group2 <span class="ot">&lt;-</span> <span class="fu">func</span>(n)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply Welch's two-sample t-test.</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">t.test</span>(group1, group2, <span class="at">alternative =</span> <span class="st">"two.sided"</span>, <span class="at">var.equal =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function that will conduct Welch's two-sample t-test 10,000 times on two groups given a specific group sample size (n) and a distribution to sample from (func).</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>sim_Wtest_10000 <span class="ot">&lt;-</span> <span class="cf">function</span>(n, func){</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>, <span class="at">.f =</span> <span class="cf">function</span>(y) <span class="fu">sim_Wtest</span>(n, func))</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>norm_dist <span class="ot">&lt;-</span> pop_dist_values <span class="sc">|&gt;</span> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(norm_values) <span class="sc">|&gt;</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> norm_values)) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Normal"</span>, <span class="at">x =</span> <span class="st">"Values"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize the moderately right-skewed population distribution.</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>mod_dist <span class="ot">&lt;-</span> pop_dist_values <span class="sc">|&gt;</span> </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(mod_values) <span class="sc">|&gt;</span> </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mod_values)) <span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Moderately Right-Skewed"</span>, <span class="at">x =</span> <span class="st">"Values"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize the strongly right-skewed population distribution.</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>ext_dist <span class="ot">&lt;-</span> pop_dist_values <span class="sc">|&gt;</span> </span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ext_values) <span class="sc">|&gt;</span> </span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ext_values)) <span class="sc">+</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Strongly Right-Skewed"</span>, <span class="at">x =</span> <span class="st">"Values"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>ext_dist <span class="sc">+</span> mod_dist <span class="sc">+</span> norm_dist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t-testproj_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1056"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above depicts the three population distributions—strongly right-skewed, moderately right-skewed, and normal, respectively—each consisting of 5,000,000 observations, from which our simulation will generate samples from. As shown in the figure, both right-skewed distributions have a greater concentration of observations toward the lower end of values compared to the normal distribution, with the strongly right-skewed distribution having the greatest number of observations concentrated at the lower end. Additionally, note that each distribution has a different population mean and variance. However, this will not affect our simulation results because both samples in each simulation are drawn from the same population distribution and therefore will have equal population means and variances.</p>
+<p>Now, let’s create the functions that will utilize the distributions and functions defined above to generate two samples and perform the two-sample t-test on those samples.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function that will conduct a two-sample t-test given each group's sample size (n) and a distribution to sample from (func).</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sim_test <span class="ot">&lt;-</span> <span class="cf">function</span>(n, func){</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert function name from string to function. </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    func <span class="ot">&lt;-</span> <span class="fu">match.fun</span>(func)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Generate two samples of size n from same distribution.</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    group1 <span class="ot">&lt;-</span> <span class="fu">func</span>(n)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    group2 <span class="ot">&lt;-</span> <span class="fu">func</span>(n)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply the two-sample t-test.</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">t.test</span>(group1, group2, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function that will conduct the two-sample t-test 100,000 times given a specific group sample size (n) and a distribution to sample from (func).</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>sim_test_100000 <span class="ot">&lt;-</span> <span class="cf">function</span>(n, func){</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100000</span>, <span class="at">.f =</span> <span class="cf">function</span>(y) <span class="fu">sim_test</span>(n, func))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="running-simulations-and-calculating-type-i-error-rate" class="level3">
 <h3 class="anchored" data-anchor-id="running-simulations-and-calculating-type-i-error-rate">Running Simulations and Calculating Type I Error Rate</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame with all possible combinations of distributions and sample size. </span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sample_size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">100</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>func <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"rnorm"</span>, <span class="st">"right_skew"</span>, <span class="st">"left_skew"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>combo_dist_sampsize <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">sample_size =</span> sample_size, <span class="at">func =</span> func, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets run 10,000 simulations/Welch's t-tests on each possible combination of distributions and sample size.</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">map2</span>(combo_dist_sampsize<span class="sc">$</span>sample_size, combo_dist_sampsize<span class="sc">$</span>func, sim_Wtest_10000)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's combine all simulations with their corresponding p-values into a data frame that will be used later to vizualize our results and findings.</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>results.df <span class="ot">&lt;-</span> combo_dist_sampsize <span class="sc">|&gt;</span> </span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">results =</span> results) <span class="sc">|&gt;</span> </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">p_values =</span> <span class="fu">map</span>(results, <span class="at">.f =</span> <span class="cf">function</span>(x) <span class="fu">map_dbl</span>(x, <span class="at">.f =</span> <span class="cf">function</span>(y) y<span class="sc">$</span>p.value))) <span class="sc">|&gt;</span> </span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(sample_size, func, p_values) <span class="sc">|&gt;</span> </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_longer</span>(p_values) <span class="sc">|&gt;</span> </span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">RejectNull =</span> (p_values <span class="sc">&lt;=</span> <span class="fl">0.05</span>)) </span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's calculate the Type I error rate for each combination of distribution and sample size.</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df <span class="ot">&lt;-</span> results.df <span class="sc">|&gt;</span>  </span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(RejectNull <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sample_size, func) <span class="sc">|&gt;</span> </span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">NumTRUE =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">TypeIRate =</span> (NumTRUE <span class="sc">/</span> <span class="dv">10000</span>))</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame with all possible combinations of distributions and sample size. </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sample_size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">12</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">1000</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>func <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"rnorm"</span>, <span class="st">"mod_right_skew"</span>, <span class="st">"ext_right_skew"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>combo_dist_sampsize <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">sample_size =</span> sample_size, <span class="at">func =</span> func, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets run 100,000 simulations/two-sample t-tests on each possible combination of distributions and sample size using map2()</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">map2</span>(combo_dist_sampsize<span class="sc">$</span>sample_size, combo_dist_sampsize<span class="sc">$</span>func, sim_test_100000)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's combine all simulations with their corresponding p-values into a data frame that will be used later to visualize our results and findings.</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>results.df <span class="ot">&lt;-</span> combo_dist_sampsize <span class="sc">|&gt;</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">results =</span> results) <span class="sc">|&gt;</span> </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">p_values =</span> <span class="fu">map</span>(results, <span class="at">.f =</span> <span class="cf">function</span>(x) <span class="fu">map_dbl</span>(x, <span class="at">.f =</span> <span class="cf">function</span>(y) y<span class="sc">$</span>p.value))) <span class="sc">|&gt;</span> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(sample_size, func, p_values) <span class="sc">|&gt;</span> </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_longer</span>(p_values) <span class="sc">|&gt;</span> </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">RejectNull =</span> (p_values <span class="sc">&lt;=</span> <span class="fl">0.05</span>)) </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's calculate the Type I error rate for each combination of distribution and sample size.</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df <span class="ot">&lt;-</span> results.df <span class="sc">|&gt;</span> </span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(RejectNull <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sample_size, func) <span class="sc">|&gt;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">NumTRUE =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">TypeIRate =</span> (NumTRUE <span class="sc">/</span> <span class="dv">100000</span>))</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 12 × 4
-# Groups:   sample_size [4]
-   sample_size func       NumTRUE TypeIRate
-         &lt;dbl&gt; &lt;chr&gt;        &lt;int&gt;     &lt;dbl&gt;
- 1          12 left_skew      434    0.0434
- 2          12 right_skew     458    0.0458
- 3          12 rnorm          462    0.0462
- 4          30 left_skew      526    0.0526
- 5          30 right_skew     546    0.0546
- 6          30 rnorm          495    0.0495
- 7          50 left_skew      485    0.0485
- 8          50 right_skew     471    0.0471
- 9          50 rnorm          525    0.0525
-10         100 left_skew      491    0.0491
-11         100 right_skew     484    0.0484
-12         100 rnorm          528    0.0528</code></pre>
+<pre><code># A tibble: 18 × 4
+# Groups:   sample_size [6]
+   sample_size func           NumTRUE TypeIRate
+         &lt;dbl&gt; &lt;chr&gt;            &lt;int&gt;     &lt;dbl&gt;
+ 1           3 ext_right_skew    3260    0.0326
+ 2           3 mod_right_skew    3236    0.0324
+ 3           3 rnorm             3407    0.0341
+ 4          12 ext_right_skew    4669    0.0467
+ 5          12 mod_right_skew    4736    0.0474
+ 6          12 rnorm             4911    0.0491
+ 7          30 ext_right_skew    4875    0.0488
+ 8          30 mod_right_skew    5042    0.0504
+ 9          30 rnorm             5005    0.0500
+10          50 ext_right_skew    4960    0.0496
+11          50 mod_right_skew    4943    0.0494
+12          50 rnorm             5003    0.0500
+13         100 ext_right_skew    4925    0.0492
+14         100 mod_right_skew    5033    0.0503
+15         100 rnorm             4968    0.0497
+16        1000 ext_right_skew    4983    0.0498
+17        1000 mod_right_skew    5069    0.0507
+18        1000 rnorm             4945    0.0494</code></pre>
 </div>
 </div>
 </section>
@@ -414,44 +458,38 @@ window.Quarto = {
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize our results</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df <span class="sc">|&gt;</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(sample_size), <span class="at">y =</span> TypeIRate, <span class="at">color =</span> func, <span class="at">group =</span> func)) <span class="sc">+</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Type I Error Rate By Sample Size and Type of Population Distribution"</span>, <span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Dashed line represents"</span> <span class="sc">~</span> alpha <span class="sc">==</span> <span class="fl">0.05</span>), <span class="at">x =</span> <span class="st">"Group Sample Size"</span>, <span class="at">y =</span> <span class="st">"Type I Error Rate"</span>, <span class="at">color =</span> <span class="st">"Population Distribution"</span>) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>)) <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Left Skewed"</span>, <span class="st">"Right Skewed"</span>, <span class="st">"Normal"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's visualize our results</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>results_withTypeI.df <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(sample_size), <span class="at">y =</span> TypeIRate, <span class="at">color =</span> func, <span class="at">group =</span> func)) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Type I Error Rate By Sample Size and Type of Population Distribution"</span>, <span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Dashed line represents"</span> <span class="sc">~</span> alpha <span class="sc">==</span> <span class="fl">0.05</span>), <span class="at">x =</span> <span class="st">"Groups Sample Size"</span>, <span class="at">y =</span> <span class="st">"Type I Error Rate"</span>, <span class="at">color =</span> <span class="st">"Population Distribution"</span>) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>), <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>), <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">12</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Strong Right Skew"</span>, <span class="st">"Moderate Right Skew"</span>, <span class="st">"Normal"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="t-testproj_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1056"></p>
+<p><img src="t-testproj_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1056"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># results.df |&gt; </span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#     ggplot(aes(x = p_values)) +</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     geom_histogram() +</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     facet_wrap(~func)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
+<p>From the figure above, we can observe the trend in the Type I error rate for each population distribution across different group sample sizes. More specificaly, we observe that regardless of the population distribution, as the group sample size increases, the Type I error rate generally approaches and fluctuates (due to random variation) around the 0.05 significance level. In fact, the Type I error rates across all population distributions become relatively close to 0.05 at a group sample size of approximately 30 or above.</p>
+<p>These observed trends can be explained, in part, by the Central Limit Theorem (CLT), which states that as sample size increases, the sampling distribution of the difference in sample means approaches a normal distribution. Hence, with a sufficiently large sample, the Type I error rate becomes less susceptible to violations of the normality assumption, due to the normality of the difference in sample means that the CLT provides. Thus, helping to explain why the Type I error rates, regardless of population distribution, eventually approached 0.05 with increasing sample size.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In all, by conducting 1.8 million simulations of the two-sample t-test on samples of varying sizes taken from both normal and skewed population distributions, we can conclude that:</p>
+<p><strong>Violations of the normality assumption can affect the Type I error rate of the two-sample t-test, particularly when small group sample sizes (~3-12 observations per group) are used. However, increasing each group’s sample size to a larger size (~35–150 observations per group) can help mitigate the effects of these violations on the Type I error rate and bring it closer to the significance level of 0.05.</strong></p>
 
 
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Unlike Student’s two-sample t-test<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

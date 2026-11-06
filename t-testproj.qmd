@@ -1,5 +1,5 @@
 ---
-title: "Testing Welch's Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate"
+title: "Testing Two-Sample t-Test Performance: Effects of Normality Violations and Sample Size on the Type I Error Rate"
 author: Yousif Najat
 date: November 4, 2026
 format: 
@@ -14,122 +14,155 @@ execute:
 
 ## Introduction
 
-Developed by B. L. Welch, Welch's two-sample t-test provides a statistical method for determining whether the unknown population means of two groups are equivalent when the variances are not equal across the two groups^[Unlike Student's two-sample t-test]. Like other statistical tests, Welch's two-sample t-test relies on the following technical assumptions:
+The two-sample t-test provides a statistical method for determining whether the unknown population means of two groups are equivalent. Like other statistical tests, the two-sample t-test relies on many technical assumptions, including the normality assumption, which states that each sample is collected from a normally distributed population.
 
-- Observations are continuous (not discrete).
-- The two samples are independent, meaning that observations within each sample are independent of one another.
-- Each sample is a simple random sample from its population.
-- Each sample is collected from a normally distributed population. This condition is especially needed when sample sizes are small such that the Central Limit Theorem does not apply. 
-
-Now, what happens when the normality assumption is not fulfilled? In other words, how does Welch's two-sample t-test perform when samples are drawn from skewed distributions? How does the Type I error rate---the probability of rejecting a true null hypothesis (a false positive)---change?
+Now, what if this normality assumption is not fulfilled? In other words, how does the two-sample t-test perform when samples are drawn from skewed distributions? How does the Type I error rate---the probability of rejecting a true null hypothesis (a false positive)---change?
 
 This project seeks to answer these questions by exploring the following:
 
-**How does violating the normality assumption of Welch's two-sample t-test affect its Type I error rate, and can increasing the sample size help reduce the impact?**
+**Assuming all other technical assumptions are met, how does violating the normality assumption of the two-sample t-test affect its Type I error rate, and can increasing the sample size help reduce that impact?**
 
-This project is motivated by the fact that real world data is rarly perfect, and populations are not always normally distributed. Thus, it becomes particularly important to study how statistical tests perform when the assumptions they rely on are not fully met.
+### Why?
+
+Because real world data is rarely perfect, and populations are not always normally distributed. Thus, it is important to study how statistical tests---like the two-sample t-test---perform when the assumptions they rely on are not fully met.
 
 ## Methodology
 
 ### Simulation Parameters
 
-- This project will use a significance level ($\alpha$) of 0.05, or $\alpha$ = 0.05.
-- To model violations of the normality assumption, this project will utilize both a right-skewed and a left-skewed population, in which samples will be taken from.
-- Additionally, a normally distributed population will be used to help facilitate comparison.
-- All distributions will be centered at 0 and have a standard deviation of 1, as a control and a way to solely isolate the effect the distribution shape itself.
-- This project will work with group samples sizes of 12, 30, 50, and 100.
+- This project will use a significance level of $\alpha$ = 0.05.
+- To model violations of the normality assumption, this project will utilize both a moderately and strongly right-skewed population distribution, in which samples will be taken from.
+- Additionally, a normally distributed population will be used to help facilitate comparisons.
+- This project will work with group sample sizes of 3, 12, 30, 50, 100, and 1000. These sample sizes were specifically chosen to provide a better idea of how the Type I error rate may change across small, medium, and larger sample sizes.
 
 ### Simulation Hypotheses for Hypothesis Test
 
-Let $\mu_{G1}$ represent the population mean of group 1.
-Let $\mu_{G2}$ represent the population mean of group 2.
+Let $\mu_{G1}$ represent the population mean of group 1. Let $\mu_{G2}$ represent the population mean of group 2.
 
-$H_0: \mu_{G1} = \mu_{G1}$
+$H_0: \mu_{G1} = \mu_{G2}$
 
-$H_A: \mu_{G1} \neq \mu_{G1}$
-
+$H_A: \mu_{G1} \neq \mu_{G2}$
 
 ### General Simulation Procedure
 
-Having established some set parameters, let's now describe how we will tackle our project question by looking at what will happen in our simulation: 
+Having established some set parameters and stated the null and alternative hypothesis, let's now explore how we will tackle our project question by describing the general process for what will happen in our simulation:
 
-1. Generate two independent samples from the same distribution (either normal, right-skewed, or left-skewed) of same size (either 12, 30, 50, or 100).
-2. Apply Welch's two-sample t-test (two-sided) on samples.
-3. Record the resulting p-value and whether we reject the null hypothesis ($\mu_{G1} = \mu_{G1}$) at $\alpha$ = 0.05.
-4. Repeat steps 1-3 for 10,000 times and for all combinations of distributions and sample sizes.
+1.  Generate two independent samples from the same distribution (either normal, moderately right-skewed, or strongly right-skewed) of same size (either 3, 12, 30, 50, 100, or 1000).
+2.  Apply the two-sample t-test (two-sided) to samples.
+3.  Record the resulting p-value and whether we reject the null hypothesis ($\mu_{G1} = \mu_{G2}$) at $\alpha$ = 0.05.
+4.  Repeat steps 1-3 for 100,000 times (using map functions and others) and for all combinations of distributions and sample sizes.
 
-### Post-simulation Procedure: Calculating Type I Error Rate
+### Post-Simulation Procedure: Calculating Type I Error Rate
 
-Having collected data on whether each simulation rejected the null hypothesis or not, we can use this to calculate the Type I error rate for all combinations of distributions and sample sizes. 
+Now, having collected data on whether each simulation rejected the null hypothesis or not, we can use this to calculate the Type I error rate for all combinations of distributions and sample sizes.
 
-Recall that both samples in each simulation are taken from the same distribution. Thus, the null hypothesis is always true, since the population of group 1 and group 2 are the same and so the population means are the same for both groups. As a result, any simulation in which Welch's two-sample t-test rejected the null hypothesis is considered a Type I error. 
+Recall that both samples in each simulation are taken from the same population distribution. Thus, the null hypothesis is always true as the population means of the two groups are equal since both groups are from the same population. As a result, any simulation in which the two-sample t-test rejects the null hypothesis is considered a Type I error.
 
-Therefore, we can calculate the Type I error rate for each combination as the number of simulations that rejected the null hypothesis for that combination divided by the total number of simulations for that combination.
+Therefore, we can calculate the Type I error rate for each combination as the number of simulations that rejected the null hypothesis for that combination divided by 100,000 (the total number of simulations for that combination).
 
 ## Simulation Code
 
 ### Creating Simulation Functions
 
-First, let's create the functions that will sample from the normal, right-skewed, and left-skewed population distributions. 
+First, let's create the functions that will randomly sample from the normal, moderately right-skewed, and strongly right-skewed distributions.
 
 ```{r}
 #| code-fold: false
 
 library(sn)
 library(tidyverse)
+library(scales)
 
 set.seed(4747)
 
-# We will use rnorm() to draw samples from the normally distributed population.
+# We will use rnorm() to draw random samples from the normally distributed population.
 
-# Let's create a function that will draw samples from the right-skewed population. 
+# Let's create a function that will random draw samples from the moderately right-skewed population. 
 
-right_skew_pop_dist <- rsn(5000000, xi = 0, omega = 1, alpha = 5)
-
-right_skew_pop_mean <- mean(right_skew_pop_dist) # Lets establish an estimate for the right-skewed population mean.
-right_skew_pop_sd <- sd(right_skew_pop_dist) # Lets establish an estimate for the right-skewed population standard deviation.
-
-right_skew <- function(n) {
-    ((rsn(n, xi = 0, omega = 1, alpha = 5)) - right_skew_pop_mean) / right_skew_pop_sd # This procedure is done as the right-skewed distribution generated is not centered at 0 and does not a standard deviation of 1; however, we can standardize our samples such that we statisfy this condition. 
+mod_right_skew <- function(n) {
+    rsn(n, xi = 0, omega = 1, alpha = 5) # Here, alpha = 5 represents moderately right-skewed.
 }
 
-# Let's create a function that will draw samples from the left-skewed population. 
+# Let's create a function that will draw random samples from the strongly right-skewed population. 
 
-left_skew_pop_dist <- rsn(5000000, xi = 0, omega = 1, alpha = -5)
-
-left_skew_pop_mean <- mean(left_skew_pop_dist) # Lets establish an estimate for the left-skewed population mean.
-left_skew_pop_sd <- sd(left_skew_pop_dist) # Lets establish an estimate for the left-skewed population standard deviation.
-
-
-left_skew <- function(n) {
-    ((rsn(n, xi = 0, omega = 1, alpha = -5)) - left_skew_pop_mean) / left_skew_pop_sd # This procedure is done as the left-skewed distribution generated is not centered at 0 and does not a standard deviation of 1; however, we can standardize our samples such that we statisfy this condition. 
+ext_right_skew <- function(n) {
+    rsn(n, xi = 0, omega = 1, alpha = 20) # Here, alpha = 20 represents strongly right-skewed.
 }
 
 ```
 
-Now, let's create the functions that will ulitize the functions above to generate two samples and perform Welch's two-sample t-test on those samples. 
+Second, let's visualize these three distributions.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 8
+
+library(patchwork)
+
+pop_dist_values <- data.frame(norm_values = rnorm(5000000), mod_values = mod_right_skew(5000000), ext_values = ext_right_skew(5000000)) 
+
+# Let's visualize the normal population distribution.
+
+norm_dist <- pop_dist_values |> 
+    select(norm_values) |> 
+    ggplot(aes(x = norm_values)) +
+    geom_histogram(bins = 50, fill = "steelblue") +
+    scale_y_continuous(labels = label_comma()) +
+    labs(title = "Normal", x = "Values", y = "Count") +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+
+# Let's visualize the moderately right-skewed population distribution.
+
+mod_dist <- pop_dist_values |> 
+    select(mod_values) |> 
+    ggplot(aes(x = mod_values)) +
+    geom_histogram(bins = 50, fill = "steelblue") +
+    scale_y_continuous(labels = label_comma()) +
+    labs(title = "Moderately Right-Skewed", x = "Values", y = "Count") +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+
+# Let's visualize the strongly right-skewed population distribution.
+
+ext_dist <- pop_dist_values |> 
+    select(ext_values) |> 
+    ggplot(aes(x = ext_values)) +
+    geom_histogram(bins = 50, fill = "steelblue") +
+    scale_y_continuous(labels = label_comma()) +
+    labs(title = "Strongly Right-Skewed", x = "Values", y = "Count") +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13))
+
+ext_dist + mod_dist + norm_dist
+```
+
+The figure above depicts the three population distributions---strongly right-skewed, moderately right-skewed, and normal, respectively---each consisting of 5,000,000 observations, from which our simulation will generate samples from. As shown in the figure, both right-skewed distributions have a greater concentration of observations toward the lower end of values compared to the normal distribution, with the strongly right-skewed distribution having the greatest number of observations concentrated at the lower end. Additionally, note that each distribution has a different population mean and variance. However, this will not affect our simulation results because both samples in each simulation are drawn from the same population distribution and therefore will have equal population means and variances. 
+
+Now, let's create the functions that will utilize the distributions and functions defined above to generate two samples and perform the two-sample t-test on those samples.
 
 ```{r}
 #| code-fold: false
 
-# Create function that will conduct Welch's two-sample t-test given each group's sample size (n) and a distribution to sample from (func).
 
-sim_Wtest <- function(n, func){
+# Create function that will conduct a two-sample t-test given each group's sample size (n) and a distribution to sample from (func).
+
+sim_test <- function(n, func){
     # Convert function name from string to function. 
     func <- match.fun(func)
 
-    # Generate two samples from same distribution.
+    # Generate two samples of size n from same distribution.
     group1 <- func(n)
     group2 <- func(n)
 
-    # Apply Welch's two-sample t-test.
-    t.test(group1, group2, alternative = "two.sided", var.equal = FALSE)
+    # Apply the two-sample t-test.
+    t.test(group1, group2, alternative = "two.sided")
 }
 
-# Create function that will conduct Welch's two-sample t-test 10,000 times on two groups given a specific group sample size (n) and a distribution to sample from (func).
+# Create function that will conduct the two-sample t-test 100,000 times given a specific group sample size (n) and a distribution to sample from (func).
 
-sim_Wtest_10000 <- function(n, func){
-    map(1:10000, .f = function(y) sim_Wtest(n, func))
+sim_test_100000 <- function(n, func){
+    map(1:100000, .f = function(y) sim_test(n, func))
 }
 
 ```
@@ -141,19 +174,19 @@ sim_Wtest_10000 <- function(n, func){
 
 # Create a data frame with all possible combinations of distributions and sample size. 
 
-sample_size <- c(12,30,50,100)
+sample_size <- c(3, 12, 30, 50, 100, 1000)
 
-func <- c("rnorm", "right_skew", "left_skew")
+func <- c("rnorm", "mod_right_skew", "ext_right_skew")
 
 combo_dist_sampsize <- expand.grid(sample_size = sample_size, func = func, stringsAsFactors = FALSE)
 
 
-# Lets run 10,000 simulations/Welch's t-tests on each possible combination of distributions and sample size.
+# Lets run 100,000 simulations/two-sample t-tests on each possible combination of distributions and sample size using map2()
 
-results <- map2(combo_dist_sampsize$sample_size, combo_dist_sampsize$func, sim_Wtest_10000)
+results <- map2(combo_dist_sampsize$sample_size, combo_dist_sampsize$func, sim_test_100000)
 
 
-# Let's combine all simulations with their corresponding p-values into a data frame that will be used later to vizualize our results and findings.
+# Let's combine all simulations with their corresponding p-values into a data frame that will be used later to visualize our results and findings.
 
 results.df <- combo_dist_sampsize |> 
     mutate(results = results) |> 
@@ -164,15 +197,13 @@ results.df <- combo_dist_sampsize |>
 
 # Let's calculate the Type I error rate for each combination of distribution and sample size.
 
-results_withTypeI.df <- results.df |>  
-    filter(RejectNull == TRUE) |> 
-    group_by(sample_size, func) |> 
-    summarize(NumTRUE = n()) |> 
-    mutate(TypeIRate = (NumTRUE / 10000))
+results_withTypeI.df <- results.df |> 
+    filter(RejectNull == TRUE) |>
+    group_by(sample_size, func) |>
+    summarize(NumTRUE = n()) |>
+    mutate(TypeIRate = (NumTRUE / 100000))
 
 results_withTypeI.df
-
-
 
 ```
 
@@ -190,15 +221,19 @@ results_withTypeI.df |>
     geom_line(linewidth = 0.8) +
     geom_point(size = 2) +
     geom_hline(yintercept = 0.05, linetype = "dashed") +
-    labs(title = "Type I Error Rate By Sample Size and Type of Population Distribution", subtitle = expression("Dashed line represents" ~ alpha == 0.05), x = "Group Sample Size", y = "Type I Error Rate", color = "Population Distribution") +
+    labs(title = "Type I Error Rate By Sample Size and Type of Population Distribution", subtitle = expression("Dashed line represents" ~ alpha == 0.05), x = "Groups Sample Size", y = "Type I Error Rate", color = "Population Distribution") +
     theme_minimal() +
-    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.title = element_text(size = 11), legend.text = element_text(size = 11)) +
-    scale_color_discrete(labels = c("Left Skewed", "Right Skewed", "Normal"))
-
-# results.df |> 
-#     ggplot(aes(x = p_values)) +
-#     geom_histogram() +
-#     facet_wrap(~func)
-        
+    theme(plot.title = element_text(face = "bold", size = 16), axis.title = element_text(face = "bold", size = 14), axis.text = element_text(size = 13), legend.title = element_text(face = "bold", size = 12), legend.text = element_text(size = 12)) +
+    scale_color_discrete(labels = c("Strong Right Skew", "Moderate Right Skew", "Normal"))
 
 ```
+
+From the figure above, we can observe the trend in the Type I error rate for each population distribution across different group sample sizes. More specificaly, we observe that regardless of the population distribution, as the group sample size increases, the Type I error rate generally approaches and fluctuates (due to random variation) around the 0.05 significance level. In fact, the Type I error rates across all population distributions become relatively close to 0.05 at a group sample size of approximately 30 or above.
+
+These observed trends can be explained, in part, by the Central Limit Theorem (CLT), which states that as sample size increases, the sampling distribution of the difference in sample means approaches a normal distribution. Hence, with a sufficiently large sample, the Type I error rate becomes less susceptible to violations of the normality assumption, due to the normality of the difference in sample means that the CLT provides. Thus, helping to explain why the Type I error rates, regardless of population distribution, eventually approached 0.05 with increasing sample size. 
+
+## Conclusion
+
+In all, by conducting 1.8 million simulations of the two-sample t-test on samples of varying sizes taken from both normal and skewed population distributions, we can conclude that:
+
+**Violations of the normality assumption can affect the Type I error rate of the two-sample t-test, particularly when small group sample sizes (~3-12 observations per group) are used. However, increasing each group's sample size to a larger size (~35–150 observations per group) can help mitigate the effects of these violations on the Type I error rate and bring it closer to the significance level of 0.05.**
