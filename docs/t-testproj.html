@@ -485,6 +485,21 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In all, by conducting 1.8 million simulations of the two-sample t-test on samples of varying sizes taken from both normal and skewed population distributions, we can conclude that:</p>
 <p><strong>Violations of the normality assumption can affect the Type I error rate of the two-sample t-test, particularly when small group sample sizes (~3-12 observations per group) are used. However, increasing each group’s sample size to a larger size (~35–150 observations per group) can help mitigate the effects of these violations on the Type I error rate and bring it closer to the significance level of 0.05.</strong></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> <span class="cf">function</span>(a,b) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    a<span class="sc">+</span>b</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    d <span class="ot">&lt;-</span> a<span class="sc">*</span>b</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    d</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ab</span>(<span class="dv">2</span>,<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+</div>
 
 
 </section>

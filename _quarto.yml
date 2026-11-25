@@ -23,6 +23,8 @@ website:
             href: SMSProject/project2.html
           - text: "t-Test Simulations"
             href: t-testproj.qmd
+          - text: "Ethics of Web Scraping"
+            href: ethicsproject.qmd
 
 
 

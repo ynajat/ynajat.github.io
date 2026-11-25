@@ -237,3 +237,13 @@ These observed trends can be explained, in part, by the Central Limit Theorem (C
 In all, by conducting 1.8 million simulations of the two-sample t-test on samples of varying sizes taken from both normal and skewed population distributions, we can conclude that:
 
 **Violations of the normality assumption can affect the Type I error rate of the two-sample t-test, particularly when small group sample sizes (~3-12 observations per group) are used. However, increasing each group's sample size to a larger size (~35–150 observations per group) can help mitigate the effects of these violations on the Type I error rate and bring it closer to the significance level of 0.05.**
+
+```{r}
+ab <- function(a,b) {
+    a+b
+    d <- a*b
+    d
+}
+
+ab(2,3)
+```
